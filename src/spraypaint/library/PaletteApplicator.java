@@ -267,20 +267,12 @@ public class PaletteApplicator {
             BufferedImage output = this.colorizeBaseOnly(tex);
             try {
                 String outputPath = out.toString().trim() + ".png";
+                if (!(Files.exists(out.getParent()))) {
+                    Files.createDirectories(out.getParent());
+                }
                 System.out.println(outputPath);
                 File outputfile = new File(outputPath);
-                try {
-                    ImageIO.write(output, "png", outputfile);
-                } catch (FileNotFoundException e2) {
-                    System.out.print("-- ");
-                    System.out.println(out.toString().trim());
-                    boolean outputDirExists = (new File(out.toString().trim())).mkdir();
-                    if (outputDirExists) {
-                        ImageIO.write(output, "png", outputfile);
-                    } else {
-                        throw e2;
-                    }
-                }
+                ImageIO.write(output, "png", outputfile);
             } catch (IOException e3) {
                 System.out.println("!! image write failed");
 //                e.printStackTrace();
@@ -355,35 +347,20 @@ public class PaletteApplicator {
     public void colorizeFolder(String in, String out) {
         try {
             Path pathIn = Paths.get(in).toRealPath();
-            Path pathOut;
-            Path pathOutTemp;
-            boolean outputDirExists;
-            try {
-                pathOut = Paths.get(out).toRealPath();
-                outputDirExists = true;
-            } catch (NoSuchFileException e) {
-                pathOutTemp = Paths.get(out);
-                outputDirExists = (new File(out)).mkdir();
-                if (outputDirExists) {
-                    pathOut = pathOutTemp.toRealPath();
-                } else {
-                    System.out.print("unable to create folder that did not exist `");
-                    System.out.print(out);
-                    System.out.println("`");
-                    throw new NoSuchFileException(out);
-                }
+            Path pathOut = Paths.get(out);
+            if (!(Files.exists(pathOut.getParent()))) {
+                Files.createDirectories(pathOut.getParent());
+                pathOut = pathOut.toRealPath();
             }
-//            Charset charset = StandardCharsets.UTF_8;
-//                    Files.lines(pathIn.resolve("/_spraypaint.txt"), charset).forEach(
-//                            (line) -> colorizeFolderSub(line, pathIn, pathOut)
-//                    );
-            try {
-                colorizeFolderSub(pathIn, pathOut);
-            } catch (IOException e2) {
-                System.err.println(e2);
-            }
+            colorizeFolderSub(pathIn, pathOut);
+//            try {
+//                colorizeFolderSub(pathIn, pathOut);
+//            } catch (IOException e2) {
+//                System.err.println(e2);
+//            }
         } catch (IOException e) {
             System.out.format("I/O Exception: %1$s", e);
+            e.printStackTrace();
         }
     }
 }
