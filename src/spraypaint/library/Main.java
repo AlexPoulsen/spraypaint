@@ -208,12 +208,12 @@ public class Main {
 //        }
 //        g2d.dispose();
 
-        BufferedImage tex = null;
-        try {
-            tex = ImageIO.read(new File("/Users/alix/Documents/art and design/endless metallurgy/metals_base/wire_coil_full.png"));
-        } catch (IOException e) {
-            System.out.println("image read failed");
-        }
+//        BufferedImage tex = null;
+//        try {
+//            tex = ImageIO.read(new File("/Users/alix/Documents/art and design/endless metallurgy/metals_base/dust.png"));
+//        } catch (IOException e) {
+//            System.out.println("image read failed");
+//        }
 //        BufferedImage texNoColor = null;
 //        try {
 //            texNoColor = ImageIO.read(new File("/Users/alix/Documents/art and design/endless metallurgy/metals_base/wire_coil_wood.png"));
@@ -228,28 +228,31 @@ public class Main {
 //        }
 //        BufferedImage texNothing = new BufferedImage(tex.getWidth(), tex.getHeight(), TYPE_INT_ARGB);
 //        RGBPalette premadePurpleBlue = new RGBPalette( "#191919,#272730,#3E3B4C,#59505B,#786E77,#968A8D,#A89D9D,#C4BBBB,#D9D9D9");
-        Palette orange = new Palette(new Hue(80), 0.6, 1,
-                2, 3, 4, 5,
-                0, 10, 0.35, 3.125,
-                0.475, 0.05, 0.1,
-                0.5, 0.15);
-        Palette blue = new Palette(new Hue(270), 0.6, 1,
-                2, 3, 4, 10,
-                0, 10, 0.25, 3.5,
-                0.15, 0.025, 0.05,
-                0.45, 0.15);
+//        Palette orange = new Palette(new Hue(80), 0.6, 1,
+//                2, 3, 4, 5,
+//                0, 10, 0.35, 3.125,
+//                0.475, 0.05, 0.1,
+//                0.5, 0.15);
+//        Palette blue = new Palette(new Hue(270), 0.6, 1,
+//                2, 3, 4, 10,
+//                0, 10, 0.25, 3.5,
+//                0.15, 0.025, 0.05,
+//                0.45, 0.15);
         Palette green = new Palette(new Hue(170), 0.7, 1,
                 2, 3, 4, 10,
                 0, -20, 0.25, 3.5,
                 0.15, 0.025, 0.025,
                 0.45, 0.15);
-        PaletteApplicator pa = new PaletteApplicator(green.getRGBPalette(), tex);
-        BufferedImage output = pa.colorifyAll();
-        try {
-            File outputfile = new File("/Users/alix/Documents/art and design/endless metallurgy/wire_coil_full.png");
-            ImageIO.write(output, "png", outputfile);
-        } catch (IOException e) {
-            System.out.println("image write failed");
-        }
+//        PaletteApplicator pa = new PaletteApplicator(green.getRGBPalette(), tex);
+//        BufferedImage output = pa.colorifyAll();
+//        try {
+//            File outputfile = new File("/Users/alix/Documents/art and design/endless metallurgy/dust.png");
+//            ImageIO.write(output, "png", outputfile);
+//        } catch (IOException e) {
+//            System.out.println("image write failed");
+//        }
+//    }
+        PaletteApplicator pa = new PaletteApplicator(green.getRGBPalette());
+        pa.colorizeFolder("/Users/alix/Documents/art and design/endless metallurgy/metals_base", "/Users/alix/Documents/art and design/endless metallurgy/recolor");
     }
 }
