@@ -155,43 +155,54 @@ public class PaletteApplicator {
         return this.colorizeAll(this.imageBase, this.imageUncolored, this.imageOverlay);
     }
 
-    public BufferedImage colorizeAll(String baseUrl, String imageBase, String imageUncolored, String imageOverlay) throws IOException {
+    public BufferedImage colorizeAll(String sharedPath, String imageBase, String imageUncolored, String imageOverlay) throws IOException{
         String pathBase;
         String pathUncolored;
         String pathOverlay;
 
-        if (baseUrl.endsWith("/")) {
-            pathBase = baseUrl + imageBase;
-            pathUncolored = baseUrl + imageUncolored;
-            pathOverlay = baseUrl + imageOverlay;
+        if (sharedPath.endsWith("/")) {
+            pathBase = sharedPath + imageBase;
+            pathUncolored = sharedPath + imageUncolored;
+            pathOverlay = sharedPath + imageOverlay;
         } else {
-            pathBase = baseUrl + "/" + imageBase;
-            pathUncolored = baseUrl + "/" + imageUncolored;
-            pathOverlay = baseUrl + "/" + imageOverlay;
+            pathBase = sharedPath + "/" + imageBase;
+            pathUncolored = sharedPath + "/" + imageUncolored;
+            pathOverlay = sharedPath + "/" + imageOverlay;
         }
+        return this.colorizeAll(pathBase, pathUncolored, pathOverlay);
+    }
 
+    public BufferedImage colorizeAll(String imageBase, String imageUncolored, String imageOverlay) throws IOException {
         BufferedImage texBase;
         try {
-            texBase = ImageIO.read(new File(pathBase));
+            texBase = ImageIO.read(new File(imageBase));
         } catch (IOException e) {
             System.out.println("base image read failed");
             throw e;
         }
 
         BufferedImage texUncolored;
-        try {
-            texUncolored = ImageIO.read(new File(pathUncolored));
-        } catch (IOException e) {
-            System.out.println("uncolored image read failed");
-            throw e;
+        if (imageUncolored.equals("_null_")) {
+            texUncolored = new BufferedImage(texBase.getWidth(), texBase.getHeight(), TYPE_INT_ARGB);
+        } else {
+            try {
+                texUncolored = ImageIO.read(new File(imageUncolored));
+            } catch (IOException e) {
+                System.out.println("uncolored image read failed");
+                throw e;
+            }
         }
 
         BufferedImage texOverlay;
-        try {
-            texOverlay = ImageIO.read(new File(pathOverlay));
-        } catch (IOException e) {
-            System.out.println("overlay image read failed");
-            throw e;
+        if (imageOverlay.equals("_null_")) {
+            texOverlay = new BufferedImage(texBase.getWidth(), texBase.getHeight(), TYPE_INT_ARGB);
+        } else {
+            try {
+                texOverlay = ImageIO.read(new File(imageOverlay));
+            } catch (IOException e) {
+                System.out.println("overlay image read failed");
+                throw e;
+            }
         }
 
         return this.colorizeAll(texBase, texUncolored, texOverlay);
@@ -253,20 +264,19 @@ public class PaletteApplicator {
         return out;
     }
 
-    private void colorizeFolderSubFile(Path in, Path out) {
+    private void colorizeFolderSubFile(String in, Path out) {
         System.out.print("Colorizing `");
-        System.out.print(in.toString().trim());
-        System.out.print(".png` to `");
-        System.out.print(out.toString().trim());
-        System.out.println(".png`");
+        System.out.print(in);
+        System.out.print("` to `");
+        System.out.print(out.toString());
+        System.out.println("`");
         BufferedImage tex;
         try {
-            String inputPath = in.toString().trim() + ".png";
-            System.out.println(inputPath);
-            tex = ImageIO.read(new File(inputPath));
+            System.out.println(in);
+            tex = ImageIO.read(new File(in));
             BufferedImage output = this.colorizeBaseOnly(tex);
             try {
-                String outputPath = out.toString().trim() + ".png";
+                String outputPath = out.toString();
                 if (!(Files.exists(out.getParent()))) {
                     Files.createDirectories(out.getParent());
                 }
@@ -283,7 +293,10 @@ public class PaletteApplicator {
         }
     }
 
-    private void colorizeFolderSubFile3(Path in1, Path in2, Path in3, Path out) {
+    private void colorizeFolderSubFile3(String in1, String in2, String in3, Path out) {
+//        String in1Str = in1.toString();
+//        String in2Str = in2.toString();
+//        String in3Str = in3.toString();
         System.out.print("Colorizing with three layers `");
         System.out.print(in1);
         System.out.print("`, `");
@@ -293,6 +306,24 @@ public class PaletteApplicator {
         System.out.print("` to `");
         System.out.print(out);
         System.out.println("`");
+        try {
+            BufferedImage output = this.colorizeAll(in1, in2, in3);
+            try {
+                String outputPath = out.toString();
+                if (!(Files.exists(out.getParent()))) {
+                    Files.createDirectories(out.getParent());
+                }
+                System.out.println(outputPath);
+                File outputfile = new File(outputPath);
+                ImageIO.write(output, "png", outputfile);
+            } catch (IOException e2) {
+                System.out.println("!! image write failed");
+                e2.printStackTrace();
+            }
+        } catch (IOException e1) {
+            System.out.println("!! image read failed");
+            e1.printStackTrace();
+        }
     }
 
     private void colorizeFolderSub(Path in, Path out) throws IOException {
@@ -318,6 +349,8 @@ public class PaletteApplicator {
                     String[] lineSplit1 = line.replace(" = ", "=").replace("= ", "=").replace(" =", "=").split("=");
                     String[] args = lineSplit1[1].trim().replace(", ", ",").split(",");
                     String dest = lineSplit1[0];
+                    String arg2;
+                    String arg3;
                     switch (args.length) {
                         case 0:
                             System.out.print("line `");
@@ -325,17 +358,29 @@ public class PaletteApplicator {
                             System.out.println("` is badly formatted. if an = is present, there must be at least one following argument");
                             break;
                         case 1:
-                            colorizeFolderSubFile(in.resolve(args[0]), out.resolve(dest));
+                            colorizeFolderSubFile(in.resolve(args[0]).toString(), out.resolve(dest));
                             break;
                         case 2:
-                            colorizeFolderSubFile3(in.resolve(args[0]), in.resolve(args[1]), null, out.resolve(dest));
+                            arg2 = args[1];
+                            if (!arg2.equals("_null_")) {
+                                arg2 = in.resolve(arg2).toString();
+                            }
+                            colorizeFolderSubFile3(in.resolve(args[0]).toString(), arg2, "_null_", out.resolve(dest));
                             break;
                         case 3:
-                            colorizeFolderSubFile3(in.resolve(args[0]), in.resolve(args[1]), in.resolve(args[2]), out.resolve(dest));
+                            arg2 = args[1];
+                            if (!arg2.equals("_null_")) {
+                                arg2 = in.resolve(arg2).toString();
+                            }
+                            arg3 = args[2];
+                            if (!arg3.equals("_null_")) {
+                                arg3 = in.resolve(arg3).toString();
+                            }
+                            colorizeFolderSubFile3(in.resolve(args[0]).toString(), arg2, arg3, out.resolve(dest));
                             break;
                     }
                 } else {
-                    colorizeFolderSubFile(in.resolve(line), out.resolve(line));
+                    colorizeFolderSubFile(in.resolve(line).toString(), out.resolve(line));
                 }
             }
         }
