@@ -344,6 +344,7 @@ public class PaletteApplicator {
                 colorizeFolderSub(in.resolve(newFolder), out.resolve(newFolder));
 //            } else if (line.length() <= 1) {
 //                continue;
+            } else if (line.equals("")) {
             } else {
                 if (line.contains("=")) {
                     String[] lineSplit1 = line.replace(" = ", "=").replace("= ", "=").replace(" =", "=").split("=");
