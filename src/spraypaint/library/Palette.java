@@ -308,7 +308,16 @@ class RGBPalette {
     }
 
     public RGB get(int index) {
+        System.out.print(index);
+        System.out.print(" ");
+        System.out.print(this.colors.length);
+        System.out.print(" ");
+        System.out.println(this.colors[index]);
         return this.colors[index];
+    }
+
+    public int length() {
+        return this.colors.length;
     }
 
     public void set(int index, RGB color) {

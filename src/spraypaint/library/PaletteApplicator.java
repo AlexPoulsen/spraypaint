@@ -18,6 +18,8 @@ public class PaletteApplicator {
     // contains magenta on areas outside of defined palette.
     // if magenta sections are visible on a texture, you likely have used incorrect lookup colors on the texture.
     RGBPalette fullColors;
+    RGBPalette rustColors;
+    RGBPalette halfRustColors;
     BufferedImage imageBase;
     BufferedImage imageUncolored;
     BufferedImage imageOverlay;
@@ -34,6 +36,8 @@ public class PaletteApplicator {
             }
         }
         this.fullColors = expandedColors;
+        this.rustColors = null;
+        this.halfRustColors = null;
         this.imageBase = null;
         this.imageUncolored = null;
         this.imageOverlay = null;
@@ -51,6 +55,8 @@ public class PaletteApplicator {
             }
         }
         this.fullColors = expandedColors;
+        this.rustColors = null;
+        this.halfRustColors = null;
         this.imageBase = image;
         this.imageUncolored = null;
         this.imageOverlay = null;
@@ -68,6 +74,113 @@ public class PaletteApplicator {
             }
         }
         this.fullColors = expandedColors;
+        this.rustColors = null;
+        this.halfRustColors = null;
+        this.imageBase = imageBase;
+        this.imageUncolored = imageUncolored;
+        this.imageOverlay = imageOverlay;
+    }
+
+    public PaletteApplicator(RGBPalette colors, RGBPalette rustColors, RGBPalette halfRustColors) {
+        RGBPalette expandedColors = new RGBPalette(16);
+        for (int i = 0; i < 16; i++) {
+            if (i < 4) {
+                expandedColors.set(i, new RGB(255, 0, 255));
+            } else if (i > 12) {
+                expandedColors.set(i, new RGB(255, 0, 255));
+            } else {
+                expandedColors.set(i, colors.get(i - 4));
+            }
+        }
+        this.fullColors = expandedColors;
+        RGBPalette expandedColorsRust = new RGBPalette(16);
+        for (int i = 0; i < 16; i++) {
+            if (i < 7) {
+                expandedColorsRust.set(i, new RGB(255, 0, 255));
+            } else {
+                expandedColorsRust.set(i, rustColors.get(i - 7));
+            }
+        }
+        this.rustColors = expandedColorsRust;
+        RGBPalette expandedColorsHalfRust = new RGBPalette(16);
+        for (int i = 0; i < 16; i++) {
+            if (i < 7) {
+                expandedColorsHalfRust.set(i, new RGB(255, 0, 255));
+            } else {
+                expandedColorsHalfRust.set(i, halfRustColors.get(i - 7));
+            }
+        }
+        this.halfRustColors = expandedColorsHalfRust;
+        this.imageBase = null;
+        this.imageUncolored = null;
+        this.imageOverlay = null;
+    }
+
+    public PaletteApplicator(RGBPalette colors, RGBPalette rustColors, RGBPalette halfRustColors, BufferedImage image) {
+        RGBPalette expandedColors = new RGBPalette(16);
+        for (int i = 0; i < 16; i++) {
+            if (i < 4) {
+                expandedColors.set(i, new RGB(255, 0, 255));
+            } else if (i > 12) {
+                expandedColors.set(i, new RGB(255, 0, 255));
+            } else {
+                expandedColors.set(i, colors.get(i - 4));
+            }
+        }
+        this.fullColors = expandedColors;
+        RGBPalette expandedColorsRust = new RGBPalette(16);
+        for (int i = 0; i < 16; i++) {
+            if (i < 7) {
+                expandedColorsRust.set(i, new RGB(255, 0, 255));
+            } else {
+                expandedColorsRust.set(i, rustColors.get(i - 7));
+            }
+        }
+        this.rustColors = expandedColorsRust;
+        RGBPalette expandedColorsHalfRust = new RGBPalette(16);
+        for (int i = 0; i < 16; i++) {
+            if (i < 7) {
+                expandedColorsHalfRust.set(i, new RGB(255, 0, 255));
+            } else {
+                expandedColorsHalfRust.set(i, halfRustColors.get(i - 7));
+            }
+        }
+        this.halfRustColors = expandedColorsHalfRust;
+        this.imageBase = image;
+        this.imageUncolored = null;
+        this.imageOverlay = null;
+    }
+
+    public PaletteApplicator(RGBPalette colors, RGBPalette rustColors, RGBPalette halfRustColors, BufferedImage imageBase, BufferedImage imageUncolored, BufferedImage imageOverlay) {
+        RGBPalette expandedColors = new RGBPalette(16);
+        for (int i = 0; i < 16; i++) {
+            if (i < 4) {
+                expandedColors.set(i, new RGB(255, 0, 255));
+            } else if (i > 12) {
+                expandedColors.set(i, new RGB(255, 0, 255));
+            } else {
+                expandedColors.set(i, colors.get(i - 4));
+            }
+        }
+        this.fullColors = expandedColors;
+        RGBPalette expandedColorsRust = new RGBPalette(16);
+        for (int i = 0; i < 16; i++) {
+            if (i < 7) {
+                expandedColorsRust.set(i, new RGB(255, 0, 255));
+            } else {
+                expandedColorsRust.set(i, rustColors.get(i - 7));
+            }
+        }
+        this.rustColors = expandedColorsRust;
+        RGBPalette expandedColorsHalfRust = new RGBPalette(16);
+        for (int i = 0; i < 16; i++) {
+            if (i < 7) {
+                expandedColorsHalfRust.set(i, new RGB(255, 0, 255));
+            } else {
+                expandedColorsHalfRust.set(i, halfRustColors.get(i - 7));
+            }
+        }
+        this.halfRustColors = expandedColorsHalfRust;
         this.imageBase = imageBase;
         this.imageUncolored = imageUncolored;
         this.imageOverlay = imageOverlay;
@@ -85,6 +198,59 @@ public class PaletteApplicator {
             }
         }
         this.fullColors = expandedColors;
+    }
+
+    public void swapPalette(RGBPalette colors, RGBPalette rustColors, RGBPalette halfRustColors) {
+        RGBPalette expandedColors = new RGBPalette(16);
+        for (int i = 0; i < 16; i++) {
+            if (i < 4) {
+                expandedColors.set(i, new RGB(255, 0, 255));
+            } else if (i > 12) {
+                expandedColors.set(i, new RGB(255, 0, 255));
+            } else {
+                expandedColors.set(i, colors.get(i - 4));
+            }
+        }
+        this.fullColors = expandedColors;
+        RGBPalette expandedColorsRust = new RGBPalette(16);
+        for (int i = 0; i < 16; i++) {
+            if (i < 7) {
+                expandedColorsRust.set(i, new RGB(255, 0, 255));
+            } else {
+                expandedColorsRust.set(i, rustColors.get(i - 7));
+            }
+        }
+        this.rustColors = expandedColorsRust;
+        RGBPalette expandedColorsHalfRust = new RGBPalette(16);
+        for (int i = 0; i < 16; i++) {
+            if (i < 7) {
+                expandedColorsHalfRust.set(i, new RGB(255, 0, 255));
+            } else {
+                expandedColorsHalfRust.set(i, halfRustColors.get(i - 7));
+            }
+        }
+        this.halfRustColors = expandedColorsHalfRust;
+    }
+
+    public void swapPalette(RGBPalette rustColors, RGBPalette halfRustColors) {
+        RGBPalette expandedColorsRust = new RGBPalette(16);
+        for (int i = 0; i < 16; i++) {
+            if (i < 7) {
+                expandedColorsRust.set(i, new RGB(255, 0, 255));
+            } else {
+                expandedColorsRust.set(i, rustColors.get(i - 7));
+            }
+        }
+        this.rustColors = expandedColorsRust;
+        RGBPalette expandedColorsHalfRust = new RGBPalette(16);
+        for (int i = 0; i < 16; i++) {
+            if (i < 7) {
+                expandedColorsHalfRust.set(i, new RGB(255, 0, 255));
+            } else {
+                expandedColorsHalfRust.set(i, halfRustColors.get(i - 7));
+            }
+        }
+        this.halfRustColors = expandedColorsHalfRust;
     }
 
     public void swapImageBase(BufferedImage image) {
@@ -144,6 +310,74 @@ public class PaletteApplicator {
                     int newG = (int) newColor.getG();
                     int newB = (int) newColor.getB();
                     newPixel = (0xff000000) | (newR<<16) | (newG<<8) | newB;
+                }
+                out.setRGB(x, y, newPixel);
+            }
+        }
+        return out;
+    }
+
+    public BufferedImage colorizeBaseOnly3Color() {
+        return this.colorizeBaseOnly3Color(this.imageBase);
+    }
+
+    public BufferedImage colorizeBaseOnly3Color(String filename) throws IOException {
+        BufferedImage tex;
+        try {
+            tex = ImageIO.read(new File(filename));
+            return this.colorizeBaseOnly3Color(tex);
+        } catch (IOException e) {
+            System.out.println("image read failed");
+            throw e;
+        }
+    }
+
+    public BufferedImage colorizeBaseOnly3Color(BufferedImage image) {
+        BufferedImage out = new BufferedImage(image.getWidth(), image.getHeight(), TYPE_INT_ARGB);
+        for (int y = 0; y     < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth();  x++) {
+
+                int value = image.getRGB(x, y);
+
+                int a = (value >> 24) & 0xff;
+                int r = (value >> 16) & 0xfc;
+                int g = (value >> 8)  & 0xfc;
+                int b = value         & 0xfc;
+
+                int newPixel;
+
+                if (a == 0) {
+                    newPixel = 0;
+                } else if ((b == 0) && g == 0) {
+                    RGB newColor = this.rustColors.get(r >> 4);
+                    int newR = (int) newColor.getR();
+                    int newG = (int) newColor.getG();
+                    int newB = (int) newColor.getB();
+                    newPixel = (0xff000000) | (newR<<16) | (newG<<8) | newB;
+                } else if ((b == 0) && r == 0) {
+                    RGB newColor = this.fullColors.get(g >> 4);
+                    int newR = (int) newColor.getR();
+                    int newG = (int) newColor.getG();
+                    int newB = (int) newColor.getB();
+                    newPixel = (0xff000000) | (newR << 16) | (newG << 8) | newB;
+                } else if ((g == 0) && r == 0) {
+                    RGB newColor = this.halfRustColors.get(b >> 4);
+                    if (newColor == null) {
+                        newPixel = 0xffff00ff;
+                    } else {
+                        int newR = (int) newColor.getR();
+                        int newG = (int) newColor.getG();
+                        int newB = (int) newColor.getB();
+                        newPixel = (0xff000000) | (newR << 16) | (newG << 8) | newB;
+                    }
+                } else if ((r == g) && (g == b)) {
+                    RGB newColor = this.fullColors.get(r >> 4);
+                    int newR = (int) newColor.getR();
+                    int newG = (int) newColor.getG();
+                    int newB = (int) newColor.getB();
+                    newPixel = (0xff000000) | (newR<<16) | (newG<<8) | newB;
+                } else {
+                    newPixel = value;
                 }
                 out.setRGB(x, y, newPixel);
             }
@@ -265,14 +499,14 @@ public class PaletteApplicator {
     }
 
     private void colorizeFolderSubFile(String in, Path out) {
-        System.out.print("Colorizing `");
-        System.out.print(in);
-        System.out.print("` to `");
-        System.out.print(out.toString());
-        System.out.println("`");
+//        System.out.print("Colorizing `");
+//        System.out.print(in);
+//        System.out.print("` to `");
+//        System.out.print(out.toString());
+//        System.out.println("`");
         BufferedImage tex;
         try {
-            System.out.println(in);
+//            System.out.println(in);
             tex = ImageIO.read(new File(in));
             BufferedImage output = this.colorizeBaseOnly(tex);
             try {
@@ -280,7 +514,7 @@ public class PaletteApplicator {
                 if (!(Files.exists(out.getParent()))) {
                     Files.createDirectories(out.getParent());
                 }
-                System.out.println(outputPath);
+//                System.out.println(outputPath);
                 File outputfile = new File(outputPath);
                 ImageIO.write(output, "png", outputfile);
             } catch (IOException e3) {
@@ -297,15 +531,15 @@ public class PaletteApplicator {
 //        String in1Str = in1.toString();
 //        String in2Str = in2.toString();
 //        String in3Str = in3.toString();
-        System.out.print("Colorizing with three layers `");
-        System.out.print(in1);
-        System.out.print("`, `");
-        System.out.print(in2);
-        System.out.print("`, `");
-        System.out.print(in3);
-        System.out.print("` to `");
-        System.out.print(out);
-        System.out.println("`");
+//        System.out.print("Colorizing with three layers `");
+//        System.out.print(in1);
+//        System.out.print("`, `");
+//        System.out.print(in2);
+//        System.out.print("`, `");
+//        System.out.print(in3);
+//        System.out.print("` to `");
+//        System.out.print(out);
+//        System.out.println("`");
         try {
             BufferedImage output = this.colorizeAll(in1, in2, in3);
             try {
@@ -313,7 +547,7 @@ public class PaletteApplicator {
                 if (!(Files.exists(out.getParent()))) {
                     Files.createDirectories(out.getParent());
                 }
-                System.out.println(outputPath);
+//                System.out.println(outputPath);
                 File outputfile = new File(outputPath);
                 ImageIO.write(output, "png", outputfile);
             } catch (IOException e2) {
@@ -333,9 +567,9 @@ public class PaletteApplicator {
         InputStream inputStream = Files.newInputStream(txtPath);
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         String line;
-        System.out.print(">> entering folder `");
-        System.out.print(in);
-        System.out.println("`");
+//        System.out.print(">> entering folder `");
+//        System.out.print(in);
+//        System.out.println("`");
         while ((line = reader.readLine()) != null) {
 //            System.out.println(line);
 //            colorizeFolderSub(line, pathIn, pathOut);
@@ -354,9 +588,9 @@ public class PaletteApplicator {
                     String arg3;
                     switch (args.length) {
                         case 0:
-                            System.out.print("line `");
-                            System.out.print(line);
-                            System.out.println("` is badly formatted. if an = is present, there must be at least one following argument");
+//                            System.out.print("line `");
+//                            System.out.print(line);
+//                            System.out.println("` is badly formatted. if an = is present, there must be at least one following argument");
                             break;
                         case 1:
                             colorizeFolderSubFile(in.resolve(args[0]).toString(), out.resolve(dest));
@@ -385,9 +619,9 @@ public class PaletteApplicator {
                 }
             }
         }
-        System.out.print("<< exiting folder `");
-        System.out.print(in);
-        System.out.println("`");
+//        System.out.print("<< exiting folder `");
+//        System.out.print(in);
+//        System.out.println("`");
     }
 
     public void colorizeFolder(String in, String out) {

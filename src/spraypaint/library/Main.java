@@ -228,21 +228,6 @@ public class Main {
 //        }
 //        BufferedImage texNothing = new BufferedImage(tex.getWidth(), tex.getHeight(), TYPE_INT_ARGB);
 //        RGBPalette premadePurpleBlue = new RGBPalette( "#191919,#272730,#3E3B4C,#59505B,#786E77,#968A8D,#A89D9D,#C4BBBB,#D9D9D9");
-//        Palette orange = new Palette(new Hue(80), 0.6, 1,
-//                2, 3, 4, 5,
-//                0, 10, 0.35, 3.125,
-//                0.475, 0.05, 0.1,
-//                0.5, 0.15);
-//        Palette blue = new Palette(new Hue(270), 0.6, 1,
-//                2, 3, 4, 10,
-//                0, 10, 0.25, 3.5,
-//                0.15, 0.025, 0.05,
-//                0.45, 0.15);
-        Palette green = new Palette(new Hue(170), 0.7, 1,
-                2, 3, 4, 10,
-                0, -20, 0.25, 3.5,
-                0.15, 0.025, 0.025,
-                0.45, 0.15);
 //        PaletteApplicator pa = new PaletteApplicator(green.getRGBPalette(), tex);
 //        BufferedImage output = pa.colorifyAll();
 //        try {
@@ -252,7 +237,61 @@ public class Main {
 //            System.out.println("image write failed");
 //        }
 //    }
-        PaletteApplicator pa = new PaletteApplicator(green.getRGBPalette());
-        pa.colorizeFolder("/Users/alix/Documents/art and design/endless metallurgy/metals_base", "/Users/alix/Documents/art and design/endless metallurgy/recolor");
+//        long start = System.nanoTime();
+//        for (int i = 0; i < 100; i++) {
+        Palette orange_block = new Palette(new Hue(80), 0.5, 1,
+                2, 3, 4, 5,
+                0, 10, 0.35, 3.125,
+                0.35, 0.00625, 0.075,
+                0.575, 0.075);
+        Palette orange_item = new Palette(new Hue(80), 0.6, 1,
+                2, 3, 4, 5,
+                0, 10, 0.35, 3.125,
+                0.4, 0.0125, 0.085,
+                0.575, 0.12);
+        Palette orange_block_rust = new Palette(new Hue(170), 0.75, 1,
+                3, 4, 2, -10,
+                -20, -10, 0.25, 3.125,
+                0.15, 0.065, 0.025,
+                0.475, 0.07);
+        Palette orange_block_rust_half = new Palette(new Hue(105), 0.75, 1,
+                3, 4, 2, -10,
+                -20, -10, 0.25, 3.125,
+                0.15, 0.065, 0.025,
+                0.475, 0.07);
+//        Palette blue = new Palette(new Hue(270), 0.6, 1,
+//                2, 3, 4, 10,
+//                0, 10, 0.25, 3.5,
+//                0.15, 0.025, 0.05,
+//                0.45, 0.15);
+//        Palette green = new Palette(new Hue(170), 0.7, 1,
+//                2, 3, 4, 10,
+//                0, -20, 0.25, 3.5,
+//                0.15, 0.025, 0.025,
+//                0.45, 0.15);
+        PaletteApplicator pa = new PaletteApplicator(orange_item.getRGBPalette());
+//        try {
+//            BufferedImage output = pa.colorizeBaseOnly("/Users/alix/Documents/art and design/endless metallurgy/items_base.png");
+//            File outputfile = new File("/Users/alix/Documents/art and design/endless metallurgy/items_recolor.png");
+//            ImageIO.write(output, "png", outputfile);
+//        } catch (IOException e) {
+//            System.out.println("image write failed");
+//        }
+        try {
+            pa.swapPalette(orange_block.getRGBPalette(), orange_block_rust.getRGBPalette(), orange_block_rust_half.getRGBPalette());
+            BufferedImage output = pa.colorizeBaseOnly3Color("/Users/alix/Documents/art and design/endless metallurgy/blocks_base_2color.png");
+            File outputfile = new File("/Users/alix/Documents/art and design/endless metallurgy/blocks_recolor_3color.png");
+            ImageIO.write(output, "png", outputfile);
+        } catch (IOException e) {
+            System.out.println("image write failed");
+        }
+//        pa.colorizeFolder("/Users/alix/Documents/art and design/endless metallurgy/metals_base", "/Users/alix/Documents/art and design/endless metallurgy/recolor/green");
+//        pa.swapPalette(orange.getRGBPalette());
+//        pa.colorizeFolder("/Users/alix/Documents/art and design/endless metallurgy/metals_base", "/Users/alix/Documents/art and design/endless metallurgy/recolor/orange");
+//        pa.swapPalette(blue.getRGBPalette());
+//        pa.colorizeFolder("/Users/alix/Documents/art and design/endless metallurgy/metals_base", "/Users/alix/Documents/art and design/endless metallurgy/recolor/blue");
+//        }
+//        long end = System.nanoTime();
+//        System.out.println("Location: " + (end - start));
     }
 }
