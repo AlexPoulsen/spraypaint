@@ -239,26 +239,61 @@ public class Main {
 //    }
 //        long start = System.nanoTime();
 //        for (int i = 0; i < 100; i++) {
-        Palette orange_block = new Palette(new Hue(80), 0.5, 1,
+//        Palette orange_block = new Palette(new Hue(80), 0.5, 1,
+//                2, 3, 4, 5,
+//                0, 10, 0.35, 3.125,
+//                0.35, 0.00625, 0.075,
+//                0.575, 0.075);
+        Palette copper2_block = new Palette(new Hue(55), 0.5, 1,
                 2, 3, 4, 5,
                 0, 10, 0.35, 3.125,
-                0.35, 0.00625, 0.075,
-                0.575, 0.075);
+                0.225, 0.0075, 0.05,
+                0.5, 0.075);
         Palette orange_item = new Palette(new Hue(80), 0.6, 1,
                 2, 3, 4, 5,
                 0, 10, 0.35, 3.125,
                 0.4, 0.0125, 0.085,
                 0.575, 0.12);
-        Palette orange_block_rust = new Palette(new Hue(170), 0.75, 1,
+        Palette orange_block_rust3 = new Palette(new Hue(170), 0.75, 1,
                 3, 4, 2, -10,
                 -20, -10, 0.25, 3.125,
                 0.15, 0.065, 0.025,
-                0.475, 0.07);
-        Palette orange_block_rust_half = new Palette(new Hue(105), 0.75, 1,
+                0.45, 0.07);
+        Palette orange_block_rust2 = new Palette(new Hue(115), 0.75, 1,
                 3, 4, 2, -10,
                 -20, -10, 0.25, 3.125,
                 0.15, 0.065, 0.025,
-                0.475, 0.07);
+                0.425, 0.07);
+        Palette orange_block_rust1 = new Palette(new Hue(65), 0.5, 1,
+                3, 4, 2, -10,
+                -20, -10, 0.25, 3.125,
+                0.15, 0.065, 0.025,
+                0.4, 0.07);
+        Palette iron_block = new Palette(new Hue(150), 0.5, 1,
+                2, 3, 4, 5,
+                0, 40, 0.1, 3.125,
+                0.00125, 0.05, 0.075,
+                0.575, 0.075);
+        Palette iron_item = new Palette(new Hue(80), 0.6, 1,
+                2, 3, 4, 5,
+                0, 10, 0.35, 3.125,
+                0.4, 0.0125, 0.085,
+                0.575, 0.12);
+        Palette iron_block_rust1 = new Palette(new Hue(70), 0.5, 1,
+                3, 4, 2, -10,
+                -20, -15, 0.25, 3.125,
+                0.005, 0.065, 0.025,
+                0.425, 0.075);
+        Palette iron_block_rust2 = new Palette(new Hue(60), 0.75, 0.75,
+                3, 4, 2, -10,
+                -20, -10, 0.25, 3.125,
+                0.175, 0.065, 0.025,
+                0.375, 0.065);
+        Palette iron_block_rust3 = new Palette(new Hue(45), 0.75, 0.5,
+                3, 4, 2, -10,
+                -20, 20, 0.25, 3.125,
+                0.225, 0.035, 0.025,
+                0.3125, 0.05);
 //        Palette blue = new Palette(new Hue(270), 0.6, 1,
 //                2, 3, 4, 10,
 //                0, 10, 0.25, 3.5,
@@ -269,7 +304,8 @@ public class Main {
 //                0, -20, 0.25, 3.5,
 //                0.15, 0.025, 0.025,
 //                0.45, 0.15);
-        PaletteApplicator pa = new PaletteApplicator(orange_item.getRGBPalette());
+        PaletteApplicator pa = new PaletteApplicator(iron_item.getRGBPalette());
+//        PaletteApplicator pa = new PaletteApplicator(orange_item.getRGBPalette());
 //        try {
 //            BufferedImage output = pa.colorizeBaseOnly("/Users/alix/Documents/art and design/endless metallurgy/items_base.png");
 //            File outputfile = new File("/Users/alix/Documents/art and design/endless metallurgy/items_recolor.png");
@@ -278,9 +314,10 @@ public class Main {
 //            System.out.println("image write failed");
 //        }
         try {
-            pa.swapPalette(orange_block.getRGBPalette(), orange_block_rust.getRGBPalette(), orange_block_rust_half.getRGBPalette());
-            BufferedImage output = pa.colorizeBaseOnly3Color("/Users/alix/Documents/art and design/endless metallurgy/blocks_base_2color.png");
-            File outputfile = new File("/Users/alix/Documents/art and design/endless metallurgy/blocks_recolor_3color.png");
+            pa.swapPalette(iron_block.getRGBPalette(), iron_block_rust1.getRGBPalette(), iron_block_rust2.getRGBPalette(), iron_block_rust3.getRGBPalette());
+//            pa.swapPalette(copper2_block.getRGBPalette(), orange_block_rust1.getRGBPalette(), orange_block_rust2.getRGBPalette(), orange_block_rust3.getRGBPalette());
+            BufferedImage output = pa.colorizeBaseOnly4Color("/Users/alix/Documents/art and design/endless metallurgy/blocks_base_4color.png");
+            File outputfile = new File("/Users/alix/Documents/art and design/endless metallurgy/blocks_recolor_4color_iron_with_palette.png");
             ImageIO.write(output, "png", outputfile);
         } catch (IOException e) {
             System.out.println("image write failed");

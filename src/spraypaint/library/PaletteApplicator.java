@@ -1,14 +1,9 @@
 package library;
 
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -18,8 +13,9 @@ public class PaletteApplicator {
     // contains magenta on areas outside of defined palette.
     // if magenta sections are visible on a texture, you likely have used incorrect lookup colors on the texture.
     RGBPalette fullColors;
-    RGBPalette rustColors;
-    RGBPalette halfRustColors;
+    RGBPalette rustColors1;
+    RGBPalette rustColors2;
+    RGBPalette rustColors3;
     BufferedImage imageBase;
     BufferedImage imageUncolored;
     BufferedImage imageOverlay;
@@ -36,8 +32,9 @@ public class PaletteApplicator {
             }
         }
         this.fullColors = expandedColors;
-        this.rustColors = null;
-        this.halfRustColors = null;
+        this.rustColors1 = null;
+        this.rustColors2 = null;
+        this.rustColors3 = null;
         this.imageBase = null;
         this.imageUncolored = null;
         this.imageOverlay = null;
@@ -55,8 +52,9 @@ public class PaletteApplicator {
             }
         }
         this.fullColors = expandedColors;
-        this.rustColors = null;
-        this.halfRustColors = null;
+        this.rustColors1 = null;
+        this.rustColors2 = null;
+        this.rustColors3 = null;
         this.imageBase = image;
         this.imageUncolored = null;
         this.imageOverlay = null;
@@ -74,14 +72,15 @@ public class PaletteApplicator {
             }
         }
         this.fullColors = expandedColors;
-        this.rustColors = null;
-        this.halfRustColors = null;
+        this.rustColors1 = null;
+        this.rustColors2 = null;
+        this.rustColors3 = null;
         this.imageBase = imageBase;
         this.imageUncolored = imageUncolored;
         this.imageOverlay = imageOverlay;
     }
 
-    public PaletteApplicator(RGBPalette colors, RGBPalette rustColors, RGBPalette halfRustColors) {
+    public PaletteApplicator(RGBPalette colors, RGBPalette rustColors1, RGBPalette rustColors2, RGBPalette rustColors3) {
         RGBPalette expandedColors = new RGBPalette(16);
         for (int i = 0; i < 16; i++) {
             if (i < 4) {
@@ -93,30 +92,41 @@ public class PaletteApplicator {
             }
         }
         this.fullColors = expandedColors;
-        RGBPalette expandedColorsRust = new RGBPalette(16);
+        RGBPalette expandedColorsRust1 = new RGBPalette(16);
         for (int i = 0; i < 16; i++) {
-            if (i < 7) {
-                expandedColorsRust.set(i, new RGB(255, 0, 255));
+            if (i < 4) {
+                expandedColorsRust1.set(i, new RGB(255, 0, 255));
+            } else if (i > 12) {
+                expandedColorsRust1.set(i, new RGB(255, 0, 255));
             } else {
-                expandedColorsRust.set(i, rustColors.get(i - 7));
+                expandedColorsRust1.set(i, rustColors1.get(i - 4));
             }
         }
-        this.rustColors = expandedColorsRust;
-        RGBPalette expandedColorsHalfRust = new RGBPalette(16);
+        this.rustColors1 = expandedColorsRust1;
+        RGBPalette expandedColorsRust2 = new RGBPalette(16);
         for (int i = 0; i < 16; i++) {
             if (i < 7) {
-                expandedColorsHalfRust.set(i, new RGB(255, 0, 255));
+                expandedColorsRust2.set(i, new RGB(255, 0, 255));
             } else {
-                expandedColorsHalfRust.set(i, halfRustColors.get(i - 7));
+                expandedColorsRust2.set(i, rustColors2.get(i - 7));
             }
         }
-        this.halfRustColors = expandedColorsHalfRust;
+        this.rustColors2 = expandedColorsRust2;
+        RGBPalette expandedColorsRust3 = new RGBPalette(16);
+        for (int i = 0; i < 16; i++) {
+            if (i < 7) {
+                expandedColorsRust3.set(i, new RGB(255, 0, 255));
+            } else {
+                expandedColorsRust3.set(i, rustColors3.get(i - 7));
+            }
+        }
+        this.rustColors3 = expandedColorsRust3;
         this.imageBase = null;
         this.imageUncolored = null;
         this.imageOverlay = null;
     }
 
-    public PaletteApplicator(RGBPalette colors, RGBPalette rustColors, RGBPalette halfRustColors, BufferedImage image) {
+    public PaletteApplicator(RGBPalette colors, RGBPalette rustColors1, RGBPalette rustColors2, RGBPalette rustColors3, BufferedImage image) {
         RGBPalette expandedColors = new RGBPalette(16);
         for (int i = 0; i < 16; i++) {
             if (i < 4) {
@@ -128,30 +138,41 @@ public class PaletteApplicator {
             }
         }
         this.fullColors = expandedColors;
-        RGBPalette expandedColorsRust = new RGBPalette(16);
+        RGBPalette expandedColorsRust1 = new RGBPalette(16);
         for (int i = 0; i < 16; i++) {
-            if (i < 7) {
-                expandedColorsRust.set(i, new RGB(255, 0, 255));
+            if (i < 4) {
+                expandedColorsRust1.set(i, new RGB(255, 0, 255));
+            } else if (i > 12) {
+                expandedColorsRust1.set(i, new RGB(255, 0, 255));
             } else {
-                expandedColorsRust.set(i, rustColors.get(i - 7));
+                expandedColorsRust1.set(i, rustColors1.get(i - 4));
             }
         }
-        this.rustColors = expandedColorsRust;
-        RGBPalette expandedColorsHalfRust = new RGBPalette(16);
+        this.rustColors1 = expandedColorsRust1;
+        RGBPalette expandedColorsRust2 = new RGBPalette(16);
         for (int i = 0; i < 16; i++) {
             if (i < 7) {
-                expandedColorsHalfRust.set(i, new RGB(255, 0, 255));
+                expandedColorsRust2.set(i, new RGB(255, 0, 255));
             } else {
-                expandedColorsHalfRust.set(i, halfRustColors.get(i - 7));
+                expandedColorsRust2.set(i, rustColors2.get(i - 7));
             }
         }
-        this.halfRustColors = expandedColorsHalfRust;
+        this.rustColors2 = expandedColorsRust2;
+        RGBPalette expandedColorsRust3 = new RGBPalette(16);
+        for (int i = 0; i < 16; i++) {
+            if (i < 7) {
+                expandedColorsRust3.set(i, new RGB(255, 0, 255));
+            } else {
+                expandedColorsRust3.set(i, rustColors3.get(i - 7));
+            }
+        }
+        this.rustColors3 = expandedColorsRust3;
         this.imageBase = image;
         this.imageUncolored = null;
         this.imageOverlay = null;
     }
 
-    public PaletteApplicator(RGBPalette colors, RGBPalette rustColors, RGBPalette halfRustColors, BufferedImage imageBase, BufferedImage imageUncolored, BufferedImage imageOverlay) {
+    public PaletteApplicator(RGBPalette colors, RGBPalette rustColors1, RGBPalette rustColors2, RGBPalette rustColors3, BufferedImage imageBase, BufferedImage imageUncolored, BufferedImage imageOverlay) {
         RGBPalette expandedColors = new RGBPalette(16);
         for (int i = 0; i < 16; i++) {
             if (i < 4) {
@@ -163,24 +184,35 @@ public class PaletteApplicator {
             }
         }
         this.fullColors = expandedColors;
-        RGBPalette expandedColorsRust = new RGBPalette(16);
+        RGBPalette expandedColorsRust1 = new RGBPalette(16);
         for (int i = 0; i < 16; i++) {
-            if (i < 7) {
-                expandedColorsRust.set(i, new RGB(255, 0, 255));
+            if (i < 4) {
+                expandedColorsRust1.set(i, new RGB(255, 0, 255));
+            } else if (i > 12) {
+                expandedColorsRust1.set(i, new RGB(255, 0, 255));
             } else {
-                expandedColorsRust.set(i, rustColors.get(i - 7));
+                expandedColorsRust1.set(i, rustColors1.get(i - 4));
             }
         }
-        this.rustColors = expandedColorsRust;
-        RGBPalette expandedColorsHalfRust = new RGBPalette(16);
+        this.rustColors1 = expandedColorsRust1;
+        RGBPalette expandedColorsRust2 = new RGBPalette(16);
         for (int i = 0; i < 16; i++) {
             if (i < 7) {
-                expandedColorsHalfRust.set(i, new RGB(255, 0, 255));
+                expandedColorsRust2.set(i, new RGB(255, 0, 255));
             } else {
-                expandedColorsHalfRust.set(i, halfRustColors.get(i - 7));
+                expandedColorsRust2.set(i, rustColors2.get(i - 7));
             }
         }
-        this.halfRustColors = expandedColorsHalfRust;
+        this.rustColors2 = expandedColorsRust2;
+        RGBPalette expandedColorsRust3 = new RGBPalette(16);
+        for (int i = 0; i < 16; i++) {
+            if (i < 7) {
+                expandedColorsRust3.set(i, new RGB(255, 0, 255));
+            } else {
+                expandedColorsRust3.set(i, rustColors3.get(i - 7));
+            }
+        }
+        this.rustColors3 = expandedColorsRust3;
         this.imageBase = imageBase;
         this.imageUncolored = imageUncolored;
         this.imageOverlay = imageOverlay;
@@ -200,7 +232,7 @@ public class PaletteApplicator {
         this.fullColors = expandedColors;
     }
 
-    public void swapPalette(RGBPalette colors, RGBPalette rustColors, RGBPalette halfRustColors) {
+    public void swapPalette(RGBPalette colors, RGBPalette rustColors1, RGBPalette rustColors2, RGBPalette rustColors3) {
         RGBPalette expandedColors = new RGBPalette(16);
         for (int i = 0; i < 16; i++) {
             if (i < 4) {
@@ -212,45 +244,65 @@ public class PaletteApplicator {
             }
         }
         this.fullColors = expandedColors;
-        RGBPalette expandedColorsRust = new RGBPalette(16);
+        RGBPalette expandedColorsRust1 = new RGBPalette(16);
         for (int i = 0; i < 16; i++) {
-            if (i < 7) {
-                expandedColorsRust.set(i, new RGB(255, 0, 255));
+            if (i < 4) {
+                expandedColorsRust1.set(i, new RGB(255, 0, 255));
+            } else if (i > 12) {
+                expandedColorsRust1.set(i, new RGB(255, 0, 255));
             } else {
-                expandedColorsRust.set(i, rustColors.get(i - 7));
+                expandedColorsRust1.set(i, rustColors1.get(i - 4));
             }
         }
-        this.rustColors = expandedColorsRust;
-        RGBPalette expandedColorsHalfRust = new RGBPalette(16);
+        this.rustColors1 = expandedColorsRust1;
+        RGBPalette expandedColorsRust2 = new RGBPalette(16);
         for (int i = 0; i < 16; i++) {
             if (i < 7) {
-                expandedColorsHalfRust.set(i, new RGB(255, 0, 255));
+                expandedColorsRust2.set(i, new RGB(255, 0, 255));
             } else {
-                expandedColorsHalfRust.set(i, halfRustColors.get(i - 7));
+                expandedColorsRust2.set(i, rustColors2.get(i - 7));
             }
         }
-        this.halfRustColors = expandedColorsHalfRust;
+        this.rustColors2 = expandedColorsRust2;
+        RGBPalette expandedColorsRust3 = new RGBPalette(16);
+        for (int i = 0; i < 16; i++) {
+            if (i < 7) {
+                expandedColorsRust3.set(i, new RGB(255, 0, 255));
+            } else {
+                expandedColorsRust3.set(i, rustColors3.get(i - 7));
+            }
+        }
+        this.rustColors3 = expandedColorsRust3;
     }
 
-    public void swapPalette(RGBPalette rustColors, RGBPalette halfRustColors) {
-        RGBPalette expandedColorsRust = new RGBPalette(16);
+    public void swapPalette(RGBPalette rustColors1, RGBPalette rustColors2, RGBPalette rustColors3) {
+        RGBPalette expandedColorsRust1 = new RGBPalette(16);
         for (int i = 0; i < 16; i++) {
             if (i < 7) {
-                expandedColorsRust.set(i, new RGB(255, 0, 255));
+                expandedColorsRust1.set(i, new RGB(255, 0, 255));
             } else {
-                expandedColorsRust.set(i, rustColors.get(i - 7));
+                expandedColorsRust1.set(i, rustColors1.get(i - 7));
             }
         }
-        this.rustColors = expandedColorsRust;
-        RGBPalette expandedColorsHalfRust = new RGBPalette(16);
+        this.rustColors1 = expandedColorsRust1;
+        RGBPalette expandedColorsRust2 = new RGBPalette(16);
         for (int i = 0; i < 16; i++) {
             if (i < 7) {
-                expandedColorsHalfRust.set(i, new RGB(255, 0, 255));
+                expandedColorsRust2.set(i, new RGB(255, 0, 255));
             } else {
-                expandedColorsHalfRust.set(i, halfRustColors.get(i - 7));
+                expandedColorsRust2.set(i, rustColors2.get(i - 7));
             }
         }
-        this.halfRustColors = expandedColorsHalfRust;
+        this.rustColors2 = expandedColorsRust2;
+        RGBPalette expandedColorsRust3 = new RGBPalette(16);
+        for (int i = 0; i < 16; i++) {
+            if (i < 7) {
+                expandedColorsRust3.set(i, new RGB(255, 0, 255));
+            } else {
+                expandedColorsRust3.set(i, rustColors3.get(i - 7));
+            }
+        }
+        this.rustColors3 = expandedColorsRust3;
     }
 
     public void swapImageBase(BufferedImage image) {
@@ -317,22 +369,23 @@ public class PaletteApplicator {
         return out;
     }
 
-    public BufferedImage colorizeBaseOnly3Color() {
-        return this.colorizeBaseOnly3Color(this.imageBase);
+    public BufferedImage colorizeBaseOnly4Color() {
+        return this.colorizeBaseOnly4Color(this.imageBase);
     }
 
-    public BufferedImage colorizeBaseOnly3Color(String filename) throws IOException {
+    public BufferedImage colorizeBaseOnly4Color(String filename) throws IOException {
         BufferedImage tex;
         try {
             tex = ImageIO.read(new File(filename));
-            return this.colorizeBaseOnly3Color(tex);
+            return this.colorizeBaseOnly4Color(tex);
         } catch (IOException e) {
             System.out.println("image read failed");
             throw e;
         }
     }
 
-    public BufferedImage colorizeBaseOnly3Color(BufferedImage image) {
+    public BufferedImage colorizeBaseOnly4Color(BufferedImage image) {
+        boolean errorToggle = true;
         BufferedImage out = new BufferedImage(image.getWidth(), image.getHeight(), TYPE_INT_ARGB);
         for (int y = 0; y     < image.getHeight(); y++) {
             for (int x = 0; x < image.getWidth();  x++) {
@@ -346,38 +399,49 @@ public class PaletteApplicator {
 
                 int newPixel;
 
-                if (a == 0) {
-                    newPixel = 0;
-                } else if ((b == 0) && g == 0) {
-                    RGB newColor = this.rustColors.get(r >> 4);
-                    int newR = (int) newColor.getR();
-                    int newG = (int) newColor.getG();
-                    int newB = (int) newColor.getB();
-                    newPixel = (0xff000000) | (newR<<16) | (newG<<8) | newB;
-                } else if ((b == 0) && r == 0) {
-                    RGB newColor = this.fullColors.get(g >> 4);
-                    int newR = (int) newColor.getR();
-                    int newG = (int) newColor.getG();
-                    int newB = (int) newColor.getB();
-                    newPixel = (0xff000000) | (newR << 16) | (newG << 8) | newB;
-                } else if ((g == 0) && r == 0) {
-                    RGB newColor = this.halfRustColors.get(b >> 4);
-                    if (newColor == null) {
-                        newPixel = 0xffff00ff;
-                    } else {
+                try {
+                    if (a == 0) {
+                        newPixel = 0;
+                    } else if ((r == g) && (g == b)) {
+                        // gray
+                        RGB newColor = this.fullColors.get(r >> 4);
                         int newR = (int) newColor.getR();
                         int newG = (int) newColor.getG();
                         int newB = (int) newColor.getB();
                         newPixel = (0xff000000) | (newR << 16) | (newG << 8) | newB;
+                    } else if ((b == 0) && r == 0) {
+                        // green
+                        RGB newColor = this.rustColors1.get(g >> 4);
+                        int newR = (int) newColor.getR();
+                        int newG = (int) newColor.getG();
+                        int newB = (int) newColor.getB();
+                        newPixel = (0xff000000) | (newR << 16) | (newG << 8) | newB;
+                    } else if ((b == 0) && g == 0) {
+                        // red
+                        RGB newColor = this.rustColors2.get(r >> 4);
+                        int newR = (int) newColor.getR();
+                        int newG = (int) newColor.getG();
+                        int newB = (int) newColor.getB();
+                        newPixel = (0xff000000) | (newR << 16) | (newG << 8) | newB;
+                    } else if ((g == 0) && r == 0) {
+                        // blue
+                        RGB newColor = this.rustColors3.get(b >> 4);
+                        int newR = (int) newColor.getR();
+                        int newG = (int) newColor.getG();
+                        int newB = (int) newColor.getB();
+                        newPixel = (0xff000000) | (newR << 16) | (newG << 8) | newB;
+                    } else {
+                        newPixel = value;
                     }
-                } else if ((r == g) && (g == b)) {
-                    RGB newColor = this.fullColors.get(r >> 4);
-                    int newR = (int) newColor.getR();
-                    int newG = (int) newColor.getG();
-                    int newB = (int) newColor.getB();
-                    newPixel = (0xff000000) | (newR<<16) | (newG<<8) | newB;
-                } else {
-                    newPixel = value;
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    // error magenta
+                    e.printStackTrace();
+                    if (errorToggle) {
+                        newPixel = 0xffff00ff;
+                    } else {
+                        newPixel = 0xff000000;
+                    }
+                    errorToggle ^= true;
                 }
                 out.setRGB(x, y, newPixel);
             }
