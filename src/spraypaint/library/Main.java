@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import javax.imageio.ImageIO;
 
 import static java.awt.image.BufferedImage.*;
@@ -304,7 +305,7 @@ public class Main {
 //                0, -20, 0.25, 3.5,
 //                0.15, 0.025, 0.025,
 //                0.45, 0.15);
-        PaletteApplicator pa = new PaletteApplicator(iron_item.getRGBPalette());
+//        PaletteApplicator pa = new PaletteApplicator(iron_item.getRGBPalette());
 //        PaletteApplicator pa = new PaletteApplicator(orange_item.getRGBPalette());
 //        try {
 //            BufferedImage output = pa.colorizeBaseOnly("/Users/alix/Documents/art and design/endless metallurgy/items_base.png");
@@ -313,15 +314,17 @@ public class Main {
 //        } catch (IOException e) {
 //            System.out.println("image write failed");
 //        }
-        try {
-            pa.swapPalette(iron_block.getRGBPalette(), iron_block_rust1.getRGBPalette(), iron_block_rust2.getRGBPalette(), iron_block_rust3.getRGBPalette());
-//            pa.swapPalette(copper2_block.getRGBPalette(), orange_block_rust1.getRGBPalette(), orange_block_rust2.getRGBPalette(), orange_block_rust3.getRGBPalette());
-            BufferedImage output = pa.colorizeBaseOnly4Color("/Users/alix/Documents/art and design/endless metallurgy/blocks_base_4color.png");
-            File outputfile = new File("/Users/alix/Documents/art and design/endless metallurgy/blocks_recolor_4color_iron_with_palette.png");
-            ImageIO.write(output, "png", outputfile);
-        } catch (IOException e) {
-            System.out.println("image write failed");
-        }
+
+//        try {
+//            pa.swapPalette(iron_block.getRGBPalette(), iron_block_rust1.getRGBPalette(), iron_block_rust2.getRGBPalette(), iron_block_rust3.getRGBPalette());
+////            pa.swapPalette(copper2_block.getRGBPalette(), orange_block_rust1.getRGBPalette(), orange_block_rust2.getRGBPalette(), orange_block_rust3.getRGBPalette());
+//            BufferedImage output = pa.colorizeBaseOnly4Color("/Users/alix/Documents/art and design/endless metallurgy/blocks_base_4color.png");
+//            File outputfile = new File("/Users/alix/Documents/art and design/endless metallurgy/blocks_recolor_4color_iron_with_palette.png");
+//            ImageIO.write(output, "png", outputfile);
+//        } catch (IOException e) {
+//            System.out.println("image write failed");
+//        }
+
 //        pa.colorizeFolder("/Users/alix/Documents/art and design/endless metallurgy/metals_base", "/Users/alix/Documents/art and design/endless metallurgy/recolor/green");
 //        pa.swapPalette(orange.getRGBPalette());
 //        pa.colorizeFolder("/Users/alix/Documents/art and design/endless metallurgy/metals_base", "/Users/alix/Documents/art and design/endless metallurgy/recolor/orange");
@@ -330,5 +333,64 @@ public class Main {
 //        }
 //        long end = System.nanoTime();
 //        System.out.println("Location: " + (end - start));
+
+        BufferedImage table = new BufferedImage(180, 361, TYPE_INT_RGB);
+        Graphics2D g2d = table.createGraphics();
+//        Palette[] rusts = new Palette[]{iron_block_rust1, iron_block_rust2, iron_block_rust3};
+        Palette[] palettes = new Palette[]{iron_block, iron_block_rust1, iron_block_rust2, iron_block_rust3};
+        for (int i = 0; i <= 360; i++) {
+//            Palette one;
+//            Palette two;
+//            if (i < 120) {
+//                one = iron_block;
+//                two = iron_block_rust1;
+//            } else if (i < 240) {
+//                one = iron_block_rust1;
+//                two = iron_block_rust2;
+//            } else if (i < 360) {
+//                one = iron_block_rust2;
+//                two = iron_block_rust3;
+//            } else {
+//                one = iron_block_rust3;
+//                two = iron_block_rust3;
+//            }
+//            RGB[] rgb = one.average(two, (i % 120.0) / 120.0).getColors();
+            double[] weights = new double[]{0.0, 0.0, 0.0, 0.0};
+            if (i < 120) {
+                weights[0] = 1 - ((i % 120.0) / 120.0);
+                weights[1] = (i % 120.0) / 120.0;
+            } else if (i < 240) {
+                weights[0] = 0;
+                weights[1] = 1 - ((i % 120.0) / 120.0);
+                weights[2] = (i % 120.0) / 120.0;
+            } else if (i < 360) {
+                weights[0] = 0;
+                weights[1] = 0;
+                weights[2] = 1 - ((i % 120.0) / 120.0);
+                weights[3] = (i % 120.0) / 120.0;
+            } else {
+                weights[0] = 0;
+                weights[1] = 0;
+                weights[2] = 0;
+                weights[3] = 1;
+            }
+            Palette avg = Palette.average(palettes, weights);
+            System.out.println(Arrays.toString(weights));
+            System.out.println(avg.getBaseHue());
+            RGB[] rgb = avg.getColors();
+            for (int j = 0; j < 9; j++) {
+//                System.out.println(rgb);
+                g2d.setColor(new java.awt.Color(LABoratory.clipQuant(rgb[j].getR()), LABoratory.clipQuant(rgb[j].getG()), LABoratory.clipQuant(rgb[j].getB())));
+                g2d.drawLine(j * 20, i, j * 20 + 16, i);
+            }
+//            System.out.println();
+        }
+        try {
+            File outputfile = new File("/Users/alix/Documents/art and design/palette_average_iron_ncolor_2.png");
+            ImageIO.write(table, "png", outputfile);
+        } catch (IOException e) {
+            System.out.println("image write failed");
+        }
+        g2d.dispose();
     }
 }

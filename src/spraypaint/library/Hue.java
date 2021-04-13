@@ -50,11 +50,33 @@ class WeightedHue implements Comparable<WeightedHue> {
     public int hashCode() {
         return Objects.hash(value, weight);
     }
+
+    @Override
+    public String toString() {
+        return "WeightedHue{" +
+                "value=" + value +
+                ", weight=" + weight +
+                '}';
+    }
 }
 
 
 class HueSet {
     private ArrayList<WeightedHue> hues;
+
+    public HueSet(Hue[] hues) {
+        this.hues = new ArrayList<WeightedHue>(hues.length + 5);
+        for (int i = 0; i < hues.length; i++) {
+            this.hues.add(new WeightedHue(hues[i].get(), 1));
+        }
+    }
+
+    public HueSet(Hue[] hues, double[] weights) {
+        this.hues = new ArrayList<WeightedHue>(hues.length + 5);
+        for (int i = 0; i < hues.length; i++) {
+            this.hues.add(new WeightedHue(hues[i].get(), weights[i]));
+        }
+    }
 
     public HueSet(int capacity) {
         this.hues = new ArrayList<WeightedHue>(capacity);
@@ -84,6 +106,26 @@ class HueSet {
         return this;
     }
 
+    public HueSet prepend(double value, double weight) {
+        this.hues.add(0, new WeightedHue(value, weight));
+        return this;
+    }
+
+    public HueSet prepend(double value) {
+        this.hues.add(0, new WeightedHue(value, 1f));
+        return this;
+    }
+
+    public HueSet prepend(BaseHue hue, double weight) {
+        this.hues.add(0, new WeightedHue(hue.get(), weight));
+        return this;
+    }
+
+    public HueSet prepend(BaseHue hue) {
+        this.hues.add(0, new WeightedHue(hue.get(), 1f));
+        return this;
+    }
+
     public HueSet sort() {
         Collections.sort(this.hues);
         return this;
@@ -109,6 +151,13 @@ class HueSet {
             out[i++] = h.getWeight();
         }
         return out;
+    }
+
+    @Override
+    public String toString() {
+        return "HueSet{" +
+                "hues=" + this.hues +
+                '}';
     }
 }
 
@@ -148,6 +197,7 @@ final class Huetilities {
     }
 
     static double hueAverage(HueSet hs) {
+        System.out.println(hs);
         hs.sort();
         double[] hues = new double[hs.size()];
         double[] weights = new double[hs.size()];
@@ -348,7 +398,15 @@ public class Hue implements BaseHue {
     }
 
     public Hue getAverage(HueSet values) {
-        return new Hue(Huetilities.hueAverage(values.add(this.hue)));
+        return new Hue(Huetilities.hueAverage(values.prepend(this.hue)));
+    }
+
+    public Hue getAverage(HueSet values, double weightThis) {
+        return new Hue(Huetilities.hueAverage(values.prepend(this.hue, weightThis)));
+    }
+
+    public static Hue average(HueSet values) {
+        return new Hue(Huetilities.hueAverage(values));
     }
 
     public boolean equals(double value) {

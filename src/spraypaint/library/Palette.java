@@ -1,6 +1,9 @@
 package library;
 
 import java.util.Arrays;
+import java.util.concurrent.Callable;
+import java.util.function.DoubleConsumer;
+import java.util.function.Function;
 
 public class Palette {
     Color[] colors;
@@ -22,6 +25,70 @@ public class Palette {
 
     double baseLuminance;
     double luminanceSpread;
+
+    public Hue getBaseHue() {
+        return baseHue;
+    }
+
+    public double getHueSpreadBlueAmount() {
+        return hueSpreadBlueAmount;
+    }
+
+    public double getHueSpreadYellowAmount() {
+        return hueSpreadYellowAmount;
+    }
+
+    public double getHueJitterA() {
+        return hueJitterA;
+    }
+
+    public double getHueJitterB() {
+        return hueJitterB;
+    }
+
+    public double getHueJitterC() {
+        return hueJitterC;
+    }
+
+    public double getHueJitterAmount() {
+        return hueJitterAmount;
+    }
+
+    public double getHueNonlinSpread() {
+        return hueNonlinSpread;
+    }
+
+    public double getHueSincSineAmount() {
+        return hueSincSineAmount;
+    }
+
+    public double getHueSincSineChromaAmount() {
+        return hueSincSineChromaAmount;
+    }
+
+    public double getHueSincSinePosition() {
+        return hueSincSinePosition;
+    }
+
+    public double getBaseChroma() {
+        return baseChroma;
+    }
+
+    public double getChromaSpreadDark() {
+        return chromaSpreadDark;
+    }
+
+    public double getChromaSpreadLight() {
+        return chromaSpreadLight;
+    }
+
+    public double getBaseLuminance() {
+        return baseLuminance;
+    }
+
+    public double getLuminanceSpread() {
+        return luminanceSpread;
+    }
 
     private double hueNonlin(double x, double amount) {
         double paren1 = ((x - 4.5) * amount) / 20;
@@ -276,6 +343,157 @@ public class Palette {
         }
         return new RGBPalette(out);
     }
+
+    public Palette average(Palette other) {
+        return new Palette(this.baseHue.getAverage(other.baseHue),
+                (this.hueSpreadBlueAmount + other.hueSpreadBlueAmount) / 2,
+                (this.hueSpreadYellowAmount + other.hueSpreadYellowAmount) / 2,
+                (this.hueJitterA + other.hueJitterA) / 2,
+                (this.hueJitterB + other.hueJitterB) / 2,
+                (this.hueJitterC + other.hueJitterC) / 2,
+                (this.hueJitterAmount + other.hueJitterAmount) / 2,
+                (this.hueNonlinSpread + other.hueNonlinSpread) / 2,
+                (this.hueSincSineAmount + other.hueSincSineAmount) / 2,
+                (this.hueSincSineChromaAmount + other.hueSincSineChromaAmount) / 2,
+                (this.hueSincSinePosition + other.hueSincSinePosition) / 2,
+                (this.baseChroma + other.baseChroma) / 2,
+                (this.chromaSpreadDark + other.chromaSpreadDark) / 2,
+                (this.chromaSpreadLight + other.chromaSpreadLight) / 2,
+                (this.baseLuminance + other.baseLuminance) / 2,
+                (this.luminanceSpread + other.luminanceSpread) / 2);
+    }
+
+    public Palette average(Palette other, double otherWeight) {
+        return new Palette(this.baseHue.getAverage(other.baseHue, otherWeight),
+                (1-otherWeight) * this.hueSpreadBlueAmount + otherWeight * other.hueSpreadBlueAmount,
+                (1-otherWeight) * this.hueSpreadYellowAmount + otherWeight * other.hueSpreadYellowAmount,
+                (1-otherWeight) * this.hueJitterA + otherWeight * other.hueJitterA,
+                (1-otherWeight) * this.hueJitterB + otherWeight * other.hueJitterB,
+                (1-otherWeight) * this.hueJitterC + otherWeight * other.hueJitterC,
+                (1-otherWeight) * this.hueJitterAmount + otherWeight * other.hueJitterAmount,
+                (1-otherWeight) * this.hueNonlinSpread + otherWeight * other.hueNonlinSpread,
+                (1-otherWeight) * this.hueSincSineAmount + otherWeight * other.hueSincSineAmount,
+                (1-otherWeight) * this.hueSincSineChromaAmount + otherWeight * other.hueSincSineChromaAmount,
+                (1-otherWeight) * this.hueSincSinePosition + otherWeight * other.hueSincSinePosition,
+                (1-otherWeight) * this.baseChroma + otherWeight * other.baseChroma,
+                (1-otherWeight) * this.chromaSpreadDark + otherWeight * other.chromaSpreadDark,
+                (1-otherWeight) * this.chromaSpreadLight + otherWeight * other.chromaSpreadLight,
+                (1-otherWeight) * this.baseLuminance + otherWeight * other.baseLuminance,
+                (1-otherWeight) * this.luminanceSpread + otherWeight * other.luminanceSpread);
+    }
+
+    private static double[] extractDouble(Palette[] paletteArray, Function<Palette, Double> func) {
+        double[] out = new double[paletteArray.length];
+        for (int i = 0; i < out.length; i++) {
+            out[i] = func.apply(paletteArray[i]);
+        }
+        return out;
+    }
+
+    private static Hue[] extractHue(Palette[] paletteArray, Function<Palette, Hue> func) {
+        Hue[] out = new Hue[paletteArray.length];
+        for (int i = 0; i < out.length; i++) {
+            out[i] = func.apply(paletteArray[i]);
+        }
+        return out;
+    }
+
+    private static double average(double[] arr) {
+        int counter = 0;
+        double sum = 0;
+        for (int i = 0; i < arr.length; i++) {
+            sum += arr[i];
+            counter++;
+        }
+        return sum / counter;
+    }
+
+    private static double average(double[] arr, double[] weights) {
+        double counter = 0;
+        double sum = 0;
+        for (int i = 0; i < arr.length; i++) {
+            sum += arr[i] * weights[i];
+            counter += weights[i];
+        }
+        return sum / counter;
+    }
+
+    public static double[] tilt(double index, double blend, double tilt) {
+        double[] out = new double[]{0, 0, 0, 0};
+        double full;
+        double line = (1 - Math.abs((2 * blend) - 1)) * 3/8;
+        if (index > 0.5) {
+            full = index * line;
+        } else {
+            full = ((index - 8) * line) + 3;
+        }
+        double tilted = (tilt * (full)) + ((1 - tilt) * blend * 3);
+        double temp1 = Math.max(Math.min(tilted, 1), 0) % 1;
+        double temp2 = (Math.max(Math.min(tilted, 2), 1) - 1) % 1;
+        double temp3 = Math.max(Math.min(tilted, 3), 2) - 2;
+        out[0] = (1 - temp1) % 1;
+        out[1] = temp1 + (1 - temp2) % 1;
+        out[2] = temp2 + (1 - temp3) % 1;
+        out[3] = temp3;
+        return out;
+    }
+
+    public Palette average(Palette[] palettes) {
+        return new Palette(Hue.average(new HueSet(extractHue(palettes, Palette::getBaseHue))),
+                average(extractDouble(palettes, Palette::getHueSpreadBlueAmount)),
+                average(extractDouble(palettes, Palette::getHueSpreadYellowAmount)),
+                average(extractDouble(palettes, Palette::getHueJitterA)),
+                average(extractDouble(palettes, Palette::getHueJitterB)),
+                average(extractDouble(palettes, Palette::getHueJitterC)),
+                average(extractDouble(palettes, Palette::getHueJitterAmount)),
+                average(extractDouble(palettes, Palette::getHueNonlinSpread)),
+                average(extractDouble(palettes, Palette::getHueSincSineAmount)),
+                average(extractDouble(palettes, Palette::getHueSincSineChromaAmount)),
+                average(extractDouble(palettes, Palette::getHueSincSinePosition)),
+                average(extractDouble(palettes, Palette::getBaseChroma)),
+                average(extractDouble(palettes, Palette::getChromaSpreadDark)),
+                average(extractDouble(palettes, Palette::getChromaSpreadLight)),
+                average(extractDouble(palettes, Palette::getBaseLuminance)),
+                average(extractDouble(palettes, Palette::getLuminanceSpread)));
+    }
+
+    public static Palette average(Palette[] palettes, double[] weights) {
+        return new Palette(Hue.average(new HueSet(extractHue(palettes, Palette::getBaseHue), weights)),
+                average(extractDouble(palettes, Palette::getHueSpreadBlueAmount), weights),
+                average(extractDouble(palettes, Palette::getHueSpreadYellowAmount), weights),
+                average(extractDouble(palettes, Palette::getHueJitterA), weights),
+                average(extractDouble(palettes, Palette::getHueJitterB), weights),
+                average(extractDouble(palettes, Palette::getHueJitterC), weights),
+                average(extractDouble(palettes, Palette::getHueJitterAmount), weights),
+                average(extractDouble(palettes, Palette::getHueNonlinSpread), weights),
+                average(extractDouble(palettes, Palette::getHueSincSineAmount), weights),
+                average(extractDouble(palettes, Palette::getHueSincSineChromaAmount), weights),
+                average(extractDouble(palettes, Palette::getHueSincSinePosition), weights),
+                average(extractDouble(palettes, Palette::getBaseChroma), weights),
+                average(extractDouble(palettes, Palette::getChromaSpreadDark), weights),
+                average(extractDouble(palettes, Palette::getChromaSpreadLight), weights),
+                average(extractDouble(palettes, Palette::getBaseLuminance), weights),
+                average(extractDouble(palettes, Palette::getLuminanceSpread), weights));
+    }
+
+//    public static Palette average(Palette[] palettes, double index, double tilt) {
+//        return new Palette(Hue.average(new HueSet(extractHue(palettes, Palette::getBaseHue), weights)),
+//                average(extractDouble(palettes, Palette::getHueSpreadBlueAmount), weights),
+//                average(extractDouble(palettes, Palette::getHueSpreadYellowAmount), weights),
+//                average(extractDouble(palettes, Palette::getHueJitterA), weights),
+//                average(extractDouble(palettes, Palette::getHueJitterB), weights),
+//                average(extractDouble(palettes, Palette::getHueJitterC), weights),
+//                average(extractDouble(palettes, Palette::getHueJitterAmount), weights),
+//                average(extractDouble(palettes, Palette::getHueNonlinSpread), weights),
+//                average(extractDouble(palettes, Palette::getHueSincSineAmount), weights),
+//                average(extractDouble(palettes, Palette::getHueSincSineChromaAmount), weights),
+//                average(extractDouble(palettes, Palette::getHueSincSinePosition), weights),
+//                average(extractDouble(palettes, Palette::getBaseChroma), weights),
+//                average(extractDouble(palettes, Palette::getChromaSpreadDark), weights),
+//                average(extractDouble(palettes, Palette::getChromaSpreadLight), weights),
+//                average(extractDouble(palettes, Palette::getBaseLuminance), weights),
+//                average(extractDouble(palettes, Palette::getLuminanceSpread), weights));
+//    }
 }
 
 
