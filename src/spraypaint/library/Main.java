@@ -12,34 +12,6 @@ import static java.awt.image.BufferedImage.*;
 public class Main {
 
     public static void main(String[] args) {
-//        Integer[] temp = Swap.rotateArr(new Integer[]{1, 2, 3, 4, 5, 6, 7, 8}, -3);
-//	    Swap.printArr(temp);
-//        double[] ratios = TriData.makeRatios(0, 5, 15);
-//        double[] coords = TriData.getTriCoords(TriData.makeRatios(5, 5, 5), 1024);
-//        System.out.println(coords[0] + " " + coords[1]);
-//        BufferedImage feature = null;
-//        try {
-//            feature = ImageIO.read(new File("/Users/alix/Documents/art and design/feature1.png"));
-//        } catch (IOException e) {
-//            System.out.println("image read failed");
-//        }
-////        Graphics.drawImage(img, 0, 0, null);
-//        BufferedImage table = new BufferedImage(1024, TriData.fastEquilateralHeight(1024), TYPE_USHORT_GRAY);
-//        PropertyTableUtils.overlayFeature(table, feature, 1, 1, 4, 5);
-//        PropertyTableUtils.overlayFeature(table, feature, 1, 3, 1, 1);
-//        PropertyTableUtils.overlayFeature(table, feature, 1, 1, 1, 1);
-////        PropertyTableUtils.overlayFeature(table, feature, 1, 50, TriData.fastEquilateralCenterHeight(2048));
-//        Graphics2D g2d = table.createGraphics();
-//        g2d.drawLine(0, 0, 512, TriData.fastEquilateralHeight(1024));
-//        g2d.drawLine(512, TriData.fastEquilateralHeight(1024), 1024, 0);
-//        g2d.drawLine(1024, 0, 0, 0);
-//        g2d.dispose();
-//        try {
-//            File outputfile = new File("/Users/alix/Documents/art and design/saved.png");
-//            ImageIO.write(table, "png", outputfile);
-//        } catch (IOException e) {
-//            System.out.println("image write failed");
-//        }
 //        System.out.println(Hue.MAGENTA);
 //        System.out.println(Hue.YELLOW);
 //        System.out.println(Hue.YELLOW.getAverage(Hue.MAGENTA));
