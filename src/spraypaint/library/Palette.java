@@ -438,6 +438,32 @@ public class Palette {
         return out;
     }
 
+    private static double spreadSine(double x, double spread) {
+        return (0.9 * Math.cos((x * Math.PI)/(5 * spread))) + (0.05 * Math.cos((3 * x * Math.PI)/(5 * spread) - Math.PI));
+    }
+
+    private static double adjustedSine(double in) {
+        return Math.max(0.55 * in + 0.465, 0) / 0.95;
+    }
+
+    private static double sineMask(double x, double spread) {
+        double temp = ((5 * Math.PI * spread) / 3.15);
+        return (Math.signum(-x + temp)*Math.signum(x + temp) / 2) + 0.5;
+    }
+
+    private static double spreadMask(double x) {
+        return Math.max(Math.tanh(4 * (1 - Math.abs((x - 7.5) / 6.65)) + 0.5), 0);
+    }
+
+    public static double[] spreadSineBlend(double x, double spread) {
+        double[] out = new double[4];
+        out[0] = adjustedSine(spreadSine(x, spread)) * sineMask(x, spread);
+        out[1] = adjustedSine(spreadSine(x-5,  spread)) * sineMask(x-5,  spread) * spreadMask(x);
+        out[2] = adjustedSine(spreadSine(x-10, spread)) * sineMask(x-10, spread) * spreadMask(x);
+        out[3] = adjustedSine(spreadSine(x-15, spread)) * sineMask(x-15, spread);
+        return out;
+    }
+
     public Palette average(Palette[] palettes) {
         return new Palette(Hue.average(new HueSet(extractHue(palettes, Palette::getBaseHue))),
                 average(extractDouble(palettes, Palette::getHueSpreadBlueAmount)),

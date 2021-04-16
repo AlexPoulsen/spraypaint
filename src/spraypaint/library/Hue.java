@@ -197,7 +197,6 @@ final class Huetilities {
     }
 
     static double hueAverage(HueSet hs) {
-        System.out.println(hs);
         hs.sort();
         double[] hues = new double[hs.size()];
         double[] weights = new double[hs.size()];

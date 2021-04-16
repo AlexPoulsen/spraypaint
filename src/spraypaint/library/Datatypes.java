@@ -113,11 +113,7 @@ class RGB {
 
     @Override
     public String toString() {
-        return "RGB{" +
-                "red=" + red +
-                ", green=" + green +
-                ", blue=" + blue +
-                '}';
+        return "RGB{" + red + "," + green + "," + blue + '}';
     }
 
     public RGB float01toInt255() {
