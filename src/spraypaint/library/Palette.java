@@ -468,7 +468,12 @@ public class Palette {
     }
 
     public Palette average(Palette[] palettes) {
-        return new Palette(Hue.average(new HueSet(extractHue(palettes, Palette::getBaseHue))),
+        double[] hueWeights = new double[palettes.length];
+        double[] chromaValues = extractDouble(palettes, Palette::getBaseChroma);
+        for (int i = 0; i < palettes.length; i++) {
+            hueWeights[i] = chromaValues[i] * 4;  // * 4 because chroma values, like the others, are in a weird range
+        }
+        return new Palette(Hue.average(new HueSet(extractHue(palettes, Palette::getBaseHue), hueWeights)),
                 average(extractDouble(palettes, Palette::getHueSpreadBlueAmount)),
                 average(extractDouble(palettes, Palette::getHueSpreadYellowAmount)),
                 average(extractDouble(palettes, Palette::getHueJitterA)),
@@ -479,7 +484,7 @@ public class Palette {
                 average(extractDouble(palettes, Palette::getHueSincSineAmount)),
                 average(extractDouble(palettes, Palette::getHueSincSineChromaAmount)),
                 average(extractDouble(palettes, Palette::getHueSincSinePosition)),
-                average(extractDouble(palettes, Palette::getBaseChroma)),
+                average(chromaValues),
                 average(extractDouble(palettes, Palette::getChromaSpreadDark)),
                 average(extractDouble(palettes, Palette::getChromaSpreadLight)),
                 average(extractDouble(palettes, Palette::getBaseLuminance)),
