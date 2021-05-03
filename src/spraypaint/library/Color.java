@@ -1,10 +1,13 @@
 package library;
 
 
+import library.datatypes.*;
+import library.util.LABoratory;
+
 public class Color {
-    BaseHue hue;
-    double chroma;
-    double luma;
+    public BaseHue hue;
+    public double chroma;
+    public double luma;
 
     public Color(BaseHue hue, double chroma, double luma) {
         this.hue = hue;

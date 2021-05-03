@@ -1,10 +1,11 @@
 package library;
 
+import library.datatypes.Hue;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import javax.imageio.ImageIO;
 
 import static java.awt.image.BufferedImage.*;

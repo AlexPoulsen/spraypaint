@@ -1,8 +1,11 @@
 package library;
 
+import library.datatypes.HC;
+import library.datatypes.Hue;
+import library.datatypes.HueSet;
+import library.datatypes.RGB;
+
 import java.util.Arrays;
-import java.util.concurrent.Callable;
-import java.util.function.DoubleConsumer;
 import java.util.function.Function;
 
 public class Palette {

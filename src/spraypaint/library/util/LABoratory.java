@@ -1,7 +1,10 @@
-package library;
+package library.util;
 
 
-final class LABoratory {
+import library.Color;
+import library.datatypes.*;
+
+public final class LABoratory {
     public static double chroma(double a, double b) {
         return Math.sqrt(a * a + b * b);
     }

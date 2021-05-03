@@ -1,5 +1,7 @@
 package library;
 
+import library.datatypes.RGB;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
