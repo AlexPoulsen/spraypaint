@@ -1,6 +1,6 @@
-package library;
+package alix.spraypaint.library;
 
-import library.datatypes.Hue;
+import alix.spraypaint.library.datatypes.Hue;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

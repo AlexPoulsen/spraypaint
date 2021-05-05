@@ -1,6 +1,6 @@
-package library.datatypes;
+package alix.spraypaint.library.datatypes;
 
-import library.util.Huetilities;
+import alix.spraypaint.library.util.Huetilities;
 
 public class StaticHue implements BaseHue {
     private final double hue;

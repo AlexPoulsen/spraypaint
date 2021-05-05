@@ -1,7 +1,7 @@
-package library.util;
+package alix.spraypaint.library.util;
 
-import library.datatypes.BaseHue;
-import library.datatypes.HueSet;
+import alix.spraypaint.library.datatypes.BaseHue;
+import alix.spraypaint.library.datatypes.HueSet;
 
 public final class Huetilities {
     public static double hueAdd(double a, double b) {

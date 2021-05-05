@@ -1,4 +1,4 @@
-package library.datatypes;
+package alix.spraypaint.library.datatypes;
 
 import java.util.Objects;
 

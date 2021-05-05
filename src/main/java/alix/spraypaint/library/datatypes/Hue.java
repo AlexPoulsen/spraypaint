@@ -1,6 +1,6 @@
-package library.datatypes;
+package alix.spraypaint.library.datatypes;
 
-import library.util.Huetilities;
+import alix.spraypaint.library.util.Huetilities;
 
 import java.util.ArrayList;
 import java.util.Collections;

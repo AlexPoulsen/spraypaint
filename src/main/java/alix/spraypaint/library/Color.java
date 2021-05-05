@@ -1,8 +1,8 @@
-package library;
+package alix.spraypaint.library;
 
 
-import library.datatypes.*;
-import library.util.LABoratory;
+import alix.spraypaint.library.datatypes.*;
+import alix.spraypaint.library.util.LABoratory;
 
 public class Color {
     public BaseHue hue;

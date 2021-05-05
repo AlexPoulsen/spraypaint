@@ -1,8 +1,8 @@
-package library.util;
+package alix.spraypaint.library.util;
 
 
-import library.Color;
-import library.datatypes.*;
+import alix.spraypaint.library.Color;
+import alix.spraypaint.library.datatypes.*;
 
 public final class LABoratory {
     public static double chroma(double a, double b) {

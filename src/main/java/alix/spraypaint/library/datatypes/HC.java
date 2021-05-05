@@ -1,4 +1,4 @@
-package library.datatypes;
+package alix.spraypaint.library.datatypes;
 
 public class HC {
     public double H;

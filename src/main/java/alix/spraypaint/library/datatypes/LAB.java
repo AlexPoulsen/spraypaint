@@ -1,7 +1,7 @@
-package library.datatypes;
+package alix.spraypaint.library.datatypes;
 
-import library.util.LABoratory;
-import library.datatypes.LCH;
+import alix.spraypaint.library.util.LABoratory;
+import alix.spraypaint.library.datatypes.LCH;
 
 public class LAB {
     private final double l;

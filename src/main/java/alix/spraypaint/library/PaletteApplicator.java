@@ -1,6 +1,6 @@
-package library;
+package alix.spraypaint.library;
 
-import library.datatypes.RGB;
+import alix.spraypaint.library.datatypes.RGB;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

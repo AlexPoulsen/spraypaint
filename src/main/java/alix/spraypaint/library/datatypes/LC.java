@@ -1,4 +1,4 @@
-package library.datatypes;
+package alix.spraypaint.library.datatypes;
 
 public class LC {
     public double L;
