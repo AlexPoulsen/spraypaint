@@ -1,11 +1,14 @@
 package alix.spraypaint.library;
 
 import alix.spraypaint.library.datatypes.Hue;
+import alix.spraypaint.library.datatypes.RGB;
+import alix.spraypaint.library.util.LABoratory;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import javax.imageio.ImageIO;
 
 import static java.awt.image.BufferedImage.*;
@@ -218,56 +221,57 @@ public class Main {
 //                0, 10, 0.35, 3.125,
 //                0.35, 0.00625, 0.075,
 //                0.575, 0.075);
+        int palSize = 5;
         Palette copper2_block = new Palette(new Hue(55), 0.35, 1,
                 2, 3, 4, 5,
                 0, 10, 0.35, 3.125,
                 0.225, 0.01, 0.05,
-                0.5, 0.075);
+                0.5, 0.075, palSize);
         Palette orange_item = new Palette(new Hue(80), 0.6, 1,
                 2, 3, 4, 5,
                 0, 10, 0.35, 3.125,
                 0.4, 0.0125, 0.085,
-                0.575, 0.12);
+                0.575, 0.12, palSize);
         Palette orange_block_rust1 = new Palette(new Hue(65), 0.5, 1,
                 3, 4, 2, -10,
                 -20, -10, 0.25, 3.125,
                 0.15, 0.065, 0.025,
-                0.4125, 0.07);
+                0.4125, 0.07, palSize);
         Palette orange_block_rust2 = new Palette(new Hue(115), 0.75, 1,
                 3, 4, 2, -10,
                 -20, -10, 0.25, 3.125,
                 0.15, 0.065, 0.025,
-                0.4, 0.07);
+                0.4, 0.07, palSize);
         Palette orange_block_rust3 = new Palette(new Hue(170), 0.75, 1,
                 3, 4, 2, -10,
                 -20, -10, 0.25, 3.125,
                 0.15, 0.065, 0.025,
-                0.4125, 0.07);
-        Palette iron_block = new Palette(new Hue(150), 0.5, 1,
-                2, 3, 4, 5,
-                0, 40, 0.1, 3.125,
-                0.00125, 0.05, 0.075,
-                0.575, 0.075);
+                0.4125, 0.07, palSize);
         Palette iron_item = new Palette(new Hue(80), 0.6, 1,
                 2, 3, 4, 5,
                 0, 10, 0.35, 3.125,
                 0.4, 0.0125, 0.085,
-                0.575, 0.12);
+                0.575, 0.2, palSize);
+        Palette iron_block = new Palette(new Hue(150), 0.5, 1,
+                2, 3, 4, 5,
+                0, 40, 0.1, 0.5,
+                0.125, 0.75, 0.75,
+                0.6, 0.6, palSize);
         Palette iron_block_rust1 = new Palette(new Hue(70), 0.5, 1,
                 3, 4, 2, -10,
-                -20, -15, 0.25, 3.125,
-                0.005, 0.065, 0.025,
-                0.425, 0.075);
-        Palette iron_block_rust2 = new Palette(new Hue(60), 0.75, 0.75,
+                -20, -15, 0.25, 0.5,
+                0.75, 0.75, 0.75,
+                0.425, 0.35, palSize);
+        Palette iron_block_rust2 = new Palette(new Hue(60), 0.5, 0.5,
                 3, 4, 2, -10,
-                -20, -10, 0.25, 3.125,
-                0.175, 0.065, 0.025,
-                0.375, 0.065);
-        Palette iron_block_rust3 = new Palette(new Hue(45), 0.75, 0.5,
+                -20, -10, 0.25, 0.45,
+                1.75, 0.75, 0.75,
+                0.375, 0.35, palSize);
+        Palette iron_block_rust3 = new Palette(new Hue(35), 0.5, 0.25,
                 3, 4, 2, -10,
-                -20, 20, 0.25, 3.125,
-                0.225, 0.035, 0.025,
-                0.3125, 0.05);
+                -20, 20, 0.25, 0.4,
+                2.5, 1, 0.75,
+                0.25, 0.15, palSize);
 //        Palette blue = new Palette(new Hue(270), 0.6, 1,
 //                2, 3, 4, 10,
 //                0, 10, 0.25, 3.5,
@@ -307,27 +311,28 @@ public class Main {
 //        long end = System.nanoTime();
 //        System.out.println("Location: " + (end - start));
 
-//        BufferedImage table = new BufferedImage(180, 361, TYPE_INT_RGB);
-//        Graphics2D g2d = table.createGraphics();
-////        Palette[] rusts = new Palette[]{iron_block_rust1, iron_block_rust2, iron_block_rust3};
-//        Palette[] palettes = new Palette[]{iron_block, iron_block_rust1, iron_block_rust2, iron_block_rust3};
-//        for (int i = 0; i <= 360; i++) {
-////            Palette one;
-////            Palette two;
-////            if (i < 120) {
-////                one = iron_block;
-////                two = iron_block_rust1;
-////            } else if (i < 240) {
-////                one = iron_block_rust1;
-////                two = iron_block_rust2;
-////            } else if (i < 360) {
-////                one = iron_block_rust2;
-////                two = iron_block_rust3;
-////            } else {
-////                one = iron_block_rust3;
-////                two = iron_block_rust3;
-////            }
-////            RGB[] rgb = one.average(two, (i % 120.0) / 120.0).getColors();
+        BufferedImage table = new BufferedImage(20 * palSize, 361, TYPE_INT_RGB);
+        Graphics2D g2d = table.createGraphics();
+//        Palette[] rusts = new Palette[]{iron_block_rust1, iron_block_rust2, iron_block_rust3};
+        Palette[] palettes = new Palette[]{iron_block, iron_block_rust1, iron_block_rust2, iron_block_rust3};
+        for (int i = 0; i <= 360; i++) {
+            Palette one;
+            Palette two;
+            if (i < 120) {
+                one = iron_block;
+                two = iron_block_rust1;
+            } else if (i < 240) {
+                one = iron_block_rust1;
+                two = iron_block_rust2;
+            } else if (i < 360) {
+                one = iron_block_rust2;
+                two = iron_block_rust3;
+            } else {
+                one = iron_block_rust3;
+                two = iron_block_rust3;
+            }
+            RGB[] rgb = one.average(two, (i % 120.0) / 120.0).getColors();
+
 //            double[] weights = new double[]{0.0, 0.0, 0.0, 0.0};
 //            if (i < 120) {
 //                weights[0] = 1 - ((i % 120.0) / 120.0);
@@ -351,81 +356,88 @@ public class Main {
 ////            System.out.println(Arrays.toString(weights));
 ////            System.out.println(avg.getBaseHue());
 //            RGB[] rgb = avg.getColors();
-//            for (int j = 0; j < 9; j++) {
-////                System.out.println(rgb);
-//                g2d.setColor(new java.awt.Color(LABoratory.clipQuant(rgb[j].getR()), LABoratory.clipQuant(rgb[j].getG()), LABoratory.clipQuant(rgb[j].getB())));
-//                g2d.drawLine(j * 20, i, j * 20 + 16, i);
-//            }
-////            System.out.println();
-//        }
-//        try {
-//            File outputfile = new File("/Users/alix/Documents/art and design/palette_average_iron_ncolor_2.png");
-//            ImageIO.write(table, "png", outputfile);
-//        } catch (IOException e) {
-//            System.out.println("image write failed");
-//        }
-//        g2d.dispose();
 
-        BufferedImage table = new BufferedImage(304, 768, TYPE_INT_RGB);
-        Graphics2D g2d = table.createGraphics();
-//        Palette[] palettes = new Palette[]{iron_block, iron_block_rust1, iron_block_rust2, iron_block_rust3};
-        Palette[] palettes = new Palette[]{copper2_block, orange_block_rust1, orange_block_rust2, orange_block_rust3};
-        PaletteApplicator pa = new PaletteApplicator(iron_block.getRGBPalette());
-        for (int i = 0; i < 16; i++) {
-            double[] weights; // = new double[]{0.0, 0.0, 0.0, 0.0};
-            weights = Palette.spreadSineBlend(i, 1.2);
-//            if (i < 5) {
-//                weights[0] = 1 - ((i % 5) / 5.0);
-//                weights[1] = (i % 5) / 5.0;
-//            } else if (i < 10) {
-//                weights[0] = 0;
-//                weights[1] = 1 - ((i % 5) / 5.0);
-//                weights[2] = (i % 5) / 5.0;
-//            } else if (i < 15) {
-//                weights[0] = 0;
-//                weights[1] = 0;
-//                weights[2] = 1 - ((i % 5) / 5.0);
-//                weights[3] = (i % 5) / 5.0;
-//            } else {
-//                weights[0] = 0;
-//                weights[1] = 0;
-//                weights[2] = 0;
-//                weights[3] = 1;
-//            }
-//            System.out.println(Arrays.toString(weights));
-            Palette avg = Palette.average(palettes, weights);
-//            RGB[] rgb = avg.getColors();
-            pa.swapPalette(avg.getRGBPalette());
-            int rownum;
-            if (i < 2) {
-                rownum = 1;
-            } else if (i < 4) {
-                rownum = 2;
-            } else if (i < 6) {
-                rownum = 3;
-            } else if (i < 8) {
-                rownum = 4;
-            } else if (i < 11) {
-                rownum = 5;
-            } else if (i < 14) {
-                rownum = 6;
-            } else {
-                rownum = 7;
+            for (int j = 0; j < palSize; j++) {
+//                if ((rgb[j].getR() < 0.1) && (rgb[j].getG() < 0.1) && (rgb[j].getB() < 0.1)) {
+//                    System.out.println(rgb[j]);
+//                    System.out.println(j);
+//                }
+//                if (j == 9) {
+//                    System.out.println(rgb[j]);
+//                }
+                g2d.setColor(new java.awt.Color(LABoratory.clipQuant(rgb[j].getR()), LABoratory.clipQuant(rgb[j].getG()), LABoratory.clipQuant(rgb[j].getB())));
+                g2d.drawLine(j * 20, i, j * 20 + 16, i);
             }
-            try {
-                g2d.drawImage(
-                        pa.colorizeBaseOnly("/Users/alix/Documents/art and design/endless metallurgy/blocks_base_2/row_" + rownum + ".png")
-                        , 0, i * 48, null);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            System.out.println();s
         }
         try {
-            File outputfile = new File("/Users/alix/Documents/art and design/endless metallurgy/palette_average_copper_blocks_sine_1_2_alt2.png");
+            File outputfile = new File("/Users/alix/Documents/art and design/palette_iron_dyn_v5_5.png");
             ImageIO.write(table, "png", outputfile);
         } catch (IOException e) {
             System.out.println("image write failed");
         }
         g2d.dispose();
+
+//        BufferedImage table = new BufferedImage(304, 768, TYPE_INT_RGB);
+//        Graphics2D g2d = table.createGraphics();
+////        Palette[] palettes = new Palette[]{iron_block, iron_block_rust1, iron_block_rust2, iron_block_rust3};
+//        Palette[] palettes = new Palette[]{copper2_block, orange_block_rust1, orange_block_rust2, orange_block_rust3};
+//        PaletteApplicator pa = new PaletteApplicator(iron_block.getRGBPalette());
+//        for (int i = 0; i < 16; i++) {
+//            double[] weights; // = new double[]{0.0, 0.0, 0.0, 0.0};
+//            weights = Palette.spreadSineBlend(i, 1.2);
+////            if (i < 5) {
+////                weights[0] = 1 - ((i % 5) / 5.0);
+////                weights[1] = (i % 5) / 5.0;
+////            } else if (i < 10) {
+////                weights[0] = 0;
+////                weights[1] = 1 - ((i % 5) / 5.0);
+////                weights[2] = (i % 5) / 5.0;
+////            } else if (i < 15) {
+////                weights[0] = 0;
+////                weights[1] = 0;
+////                weights[2] = 1 - ((i % 5) / 5.0);
+////                weights[3] = (i % 5) / 5.0;
+////            } else {
+////                weights[0] = 0;
+////                weights[1] = 0;
+////                weights[2] = 0;
+////                weights[3] = 1;
+////            }
+////            System.out.println(Arrays.toString(weights));
+//            Palette avg = Palette.average(palettes, weights);
+////            RGB[] rgb = avg.getColors();
+//            pa.swapPalette(avg.getRGBPalette());
+//            int rownum;
+//            if (i < 2) {
+//                rownum = 1;
+//            } else if (i < 4) {
+//                rownum = 2;
+//            } else if (i < 6) {
+//                rownum = 3;
+//            } else if (i < 8) {
+//                rownum = 4;
+//            } else if (i < 11) {
+//                rownum = 5;
+//            } else if (i < 14) {
+//                rownum = 6;
+//            } else {
+//                rownum = 7;
+//            }
+//            try {
+//                g2d.drawImage(
+//                        pa.colorizeBaseOnly("/Users/alix/Documents/art and design/endless metallurgy/blocks_base_2/row_" + rownum + ".png")
+//                        , 0, i * 48, null);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        try {
+//            File outputfile = new File("/Users/alix/Documents/art and design/endless metallurgy/palette_average_copper_blocks_sine_1_2_alt2.png");
+//            ImageIO.write(table, "png", outputfile);
+//        } catch (IOException e) {
+//            System.out.println("image write failed");
+//        }
+//        g2d.dispose();
     }
 }

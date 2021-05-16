@@ -5,7 +5,6 @@ import alix.spraypaint.library.datatypes.Hue;
 import alix.spraypaint.library.datatypes.HueSet;
 import alix.spraypaint.library.datatypes.RGB;
 
-import java.util.Arrays;
 import java.util.function.Function;
 
 public class Palette {
@@ -29,87 +28,93 @@ public class Palette {
     double baseLuminance;
     double luminanceSpread;
 
+    int colorCount;
+
     public Hue getBaseHue() {
-        return baseHue;
+        return this.baseHue;
     }
 
     public double getHueSpreadBlueAmount() {
-        return hueSpreadBlueAmount;
+        return this.hueSpreadBlueAmount;
     }
 
     public double getHueSpreadYellowAmount() {
-        return hueSpreadYellowAmount;
+        return this.hueSpreadYellowAmount;
     }
 
     public double getHueJitterA() {
-        return hueJitterA;
+        return this.hueJitterA;
     }
 
     public double getHueJitterB() {
-        return hueJitterB;
+        return this.hueJitterB;
     }
 
     public double getHueJitterC() {
-        return hueJitterC;
+        return this.hueJitterC;
     }
 
     public double getHueJitterAmount() {
-        return hueJitterAmount;
+        return this.hueJitterAmount;
     }
 
     public double getHueNonlinSpread() {
-        return hueNonlinSpread;
+        return this.hueNonlinSpread;
     }
 
     public double getHueSincSineAmount() {
-        return hueSincSineAmount;
+        return this.hueSincSineAmount;
     }
 
     public double getHueSincSineChromaAmount() {
-        return hueSincSineChromaAmount;
+        return this.hueSincSineChromaAmount;
     }
 
     public double getHueSincSinePosition() {
-        return hueSincSinePosition;
+        return this.hueSincSinePosition;
     }
 
     public double getBaseChroma() {
-        return baseChroma;
+        return this.baseChroma;
     }
 
     public double getChromaSpreadDark() {
-        return chromaSpreadDark;
+        return this.chromaSpreadDark;
     }
 
     public double getChromaSpreadLight() {
-        return chromaSpreadLight;
+        return this.chromaSpreadLight;
     }
 
     public double getBaseLuminance() {
-        return baseLuminance;
+        return this.baseLuminance;
     }
 
     public double getLuminanceSpread() {
-        return luminanceSpread;
+        return this.luminanceSpread;
+    }
+
+    public int getColorCount() {
+        return this.colorCount;
     }
 
     private double hueNonlin(double x, double amount) {
-        double paren1 = ((x - 4.5) * amount) / 20;
-        return Math.signum(x - 4.5) * paren1 * paren1 * paren1 * paren1;
+        double paren1 = ((x - 4) * amount) / 20;
+        return Math.signum(x - 4) * paren1 * paren1 * paren1 * paren1;
     }
 
-    private double hueNonlinRootSinTanh(double x, double amount) {
-        if (x < 1 || x > 7) {
+    private double hueNonlinRootSinTanh(double x, double amount, int colorCount) {
+        if (x == 0 || x == colorCount - 1) {
             return 0;
         }
-        double tanh = 3.5 * Math.tanh((0.35 * x - 1.4) / 2.1);  // 1.4 = 0.35 * 4
+        double tanh = Math.tanh(1.75 * ((x / (colorCount - 1)) - 0.5)) * 2.518125;  // number chosen to be zero at the endpoints, zero and colorCount, at even very large sizes
         return amount * Math.signum(tanh) * Math.sqrt(Math.sin(tanh * tanh));
     }
 
     private double edgeReduce(double x, double amount) {
         double offset = -4 * amount + 6;
-        double lower = Math.tanh(x + offset - 4.5);
-        double upper = Math.tanh(x - offset - 4.5);
+        double lower = Math.tanh(x + offset - 4);
+        double upper = Math.tanh(x - offset - 4);
         return ((upper * lower) + 1) / 2;
     }
 
@@ -122,24 +127,31 @@ public class Palette {
         return sine * sincWindow * sincWindow * sincWindow * sincWindow;
     }
 
-    private HC sincSine2(double x, double position) {
+    private HC sincSine2(double x, double position, int colorCount) {
         double sine = Math.sin(Math.PI * (x - 0.5));
         double sincWindow = 1;
         double mult = 1.5;
-        if ((x - position) != 0) {
-            double temp = Math.sin(mult * (x - position)) / (mult * (x - position));
+        double posAdj = position * colorCount;
+        if ((x - posAdj) != 0) {
+            double temp = Math.sin(mult * (x - posAdj)) / (mult * (x - posAdj));
             sincWindow = Math.tanh(4 * temp * temp * temp);
         }
         double windowPow4 = sincWindow * sincWindow * sincWindow * sincWindow;
         return new HC(sine * windowPow4, windowPow4);
     }
 
-    private double basicSlope(double x, double position, double slope) {
-        return slope * (x - position);
+    private double basicSlope(double x, double slope, double centerPos) {
+        return slope * (x - centerPos);
+    }
+
+    private double basicSlopeDynamic(double x, double slope, int colorCountMinus1) {
+//        int c = colorCount - 1;
+//        (x - (c / 2.0)) * (slope / c);
+        return ((x / colorCountMinus1) - 0.5) * slope;
     }
 
     private double basicSlopeNonlin(double x, double position, double slope) {
-        double xdiv = x / 4.5;
+        double xdiv = x / 4;
         return (slope * xdiv * xdiv * 2.1) + 0.05 - slope * 3;
     }
 
@@ -164,43 +176,43 @@ public class Palette {
         return slope * Math.tanh((x - position) / 3) * 5;
     }
 
-    private HC hueShift(double x, Hue hue, double blueAmount, double yellowAmount) {
-        return hueShift(x, hue.get(), blueAmount, yellowAmount);
+    private HC hueShift(double x, Hue hue, double blueAmount, double yellowAmount, double centerPos) {
+        return hueShift(x, hue.get(), blueAmount, yellowAmount, centerPos);
     }
 
-    private HC hueShift(double x, double hue, double blueAmount, double yellowAmount) {
+    private HC hueShift(double x, double hue, double blueAmount, double yellowAmount, double centerPos) {
         final double yellow = 110;  // for hsv/l use 60
         final double blue = 260;  // for hsv/l use 240
-//        double xms = (x - 4.5) * (x - 4.5);
-        double xm = (x - 4.5);
+//        double xms = (x - 4) * (x - 4);
+        double xm = (x - centerPos);
         double yVal = -100_000_000;
         double bVal = -100_000_000;
         if (Math.round(hue * 100.0) / 100.0 == yellow) {
             yVal = yellow;  // no change for yellow side
 //            bVal = ((20.5 - xms) * hue + xms * blue) / 20.5;  // blue function 1  --  curved
-            bVal = ((4.5 - xm) * hue + xm * blue) / 4.5;  // blue function 1  ||||  straight
+            bVal = ((centerPos - xm) * hue + xm * blue) / centerPos;  // blue function 1  ||||  straight
         } else if (Math.round(hue * 100.0) / 100.0 == blue) {
 //            yVal = ((20.5 - xms) * hue + xms * yellow) / 20.5;  // yellow function 1  --  curved
-            yVal = ((4.5 - xm) * hue + xm * yellow) / 4.5;  // yellow function 1  ||||  straight
+            yVal = ((centerPos - xm) * hue + xm * yellow) / centerPos;  // yellow function 1  ||||  straight
             bVal = blue;  // no change for blue side
         } else if ((hue < blue) && (hue > yellow)) {
             // light goes down to yellow, dark goes up to blue
 //            yVal = ((20.5 - xms) * hue + xms * yellow) / 20.5;  // yellow function 1  --  curved
-            yVal = ((4.5 - xm) * hue + xm * yellow) / 4.5;  // yellow function 1  ||||  straight
+            yVal = ((centerPos - xm) * hue + xm * yellow) / centerPos;  // yellow function 1  ||||  straight
 //            bVal = ((20.5 - xms) * hue + xms * blue) / 20.5;  // blue function 1  --  curved
-            bVal = ((4.5 - xm) * hue + xm * blue) / 4.5;  // blue function 1  ||||  straight
+            bVal = ((centerPos - xm) * hue + xm * blue) / centerPos;  // blue function 1  ||||  straight
         } else if (hue < yellow) {
             // light goes up to yellow, dark goes down to blue. low hue values
 //            yVal = ((20.5 - xms) * hue + xms * yellow) / 20.5;  // yellow function 1  --  curved
-            yVal = ((4.5 - xm) * hue + xm * yellow) / 4.5;  // yellow function 1  ||||  straight
+            yVal = ((centerPos - xm) * hue + xm * yellow) / centerPos;  // yellow function 1  ||||  straight
 //            bVal = ((20.5 - xms) * hue + xms * (blue - 360)) / 20.5;  // blue function 2  --  curved
-            bVal = ((4.5 - xm) * hue + xm * (blue - 360)) / 4.5;  // blue function 2  ||||  straight
+            bVal = ((centerPos - xm) * hue + xm * (blue - 360)) / centerPos;  // blue function 2  ||||  straight
         } else if (hue > blue) {
             // light goes up to yellow, dark goes down to blue. high hue values
 //            yVal = ((20.5 - xms) * hue + xms * (yellow + 360)) / 20.5;  // yellow function 2  --  curved
-            yVal = ((4.5 - xm) * hue + xm * (yellow + 360)) / 4.5;  // yellow function 2  ||||  straight
+            yVal = ((centerPos - xm) * hue + xm * (yellow + 360)) / centerPos;  // yellow function 2  ||||  straight
 //            bVal = ((20.5 - xms) * hue + xms * blue) / 20.5;  // blue function 1  --  curved
-            bVal = ((4.5 - xm) * hue + xm * blue) / 4.5;  // blue function 1  ||||  straight
+            bVal = ((centerPos - xm) * hue + xm * blue) / centerPos;  // blue function 1  ||||  straight
         } else {
             System.out.println("error bad hue value");
         }
@@ -209,7 +221,7 @@ public class Palette {
         double distance;
         double desatDistance;
 
-        if (x < 4) {
+        if (x < centerPos) {
             distance = Math.tanh((distanceSpread / Math.abs(hue - yellow)) + (distanceSpread / Math.abs(hue - (yellow + 360))));
             desatDistance = (distance * distance / 2) + distance;
             distance = distance * distance * distance * distance * distance * distance;
@@ -225,7 +237,7 @@ public class Palette {
             }
             outHue = intermediate % 360;
 
-        } else if (x > 4) {
+        } else if (x > centerPos) {
             distanceSpread = distanceSpread * 1.4;
             distance = Math.tanh((distanceSpread / Math.abs(hue - blue)) + (distanceSpread / Math.abs(hue - (blue - 360))));
             desatDistance = (distance * distance / 2) + distance;
@@ -247,13 +259,13 @@ public class Palette {
             desatDistance = 0;
         }
 
-        double desatMult = Math.tanh(Math.abs((x - 4.5) / 3));
+        double desatMult = Math.tanh(Math.abs((x - centerPos) / 3));
         desatDistance = softishClip(desatDistance * 2 - 1.5);
 
-        if (x < 4.5) {
+        if (x < centerPos) {
             double hueAverageMask = 0;
             return new HC(outHue * (1 - hueAverageMask) + blue * hueAverageMask, 1 - (desatMult * desatDistance * blueAmount));
-        } else if (x > 4.5) {
+        } else if (x > centerPos) {
             double hueAverageMask = 0;
             return new HC(outHue * (1 - hueAverageMask) + yellow * hueAverageMask, 1 - (desatMult * desatDistance * yellowAmount));
         } else {
@@ -282,7 +294,8 @@ public class Palette {
                    double chromaSpreadDark,
                    double chromaSpreadLight,
                    double baseLuminance,
-                   double luminanceSpread) {
+                   double luminanceSpread,
+                   int colorCount) {
         this.baseHue = baseHue;
         this.hueSpreadBlueAmount = hueSpreadBlueAmount;
         this.hueSpreadYellowAmount = hueSpreadYellowAmount;
@@ -301,47 +314,70 @@ public class Palette {
 
         this.baseLuminance = baseLuminance;
         this.luminanceSpread = luminanceSpread;
-        this.colors = new Color[9];
 
-        for (int i = 1; i < 10; i++) {
+        this.colorCount = colorCount;
+        this.colors = new Color[colorCount];
+
+        double centerPos = (colorCount - 1) / 2.0;
+        int colorCountMinus1 = colorCount - 1;
+
+        for (int i = 0; i < colorCount; i++) {
             Hue completeHue = new Hue(baseHue.get());
-
-            HC shift = this.hueShift(i-1, baseHue, hueSpreadBlueAmount, hueSpreadYellowAmount);
+            HC shift = this.hueShift(i, baseHue, hueSpreadBlueAmount, hueSpreadYellowAmount, centerPos);
             completeHue.setHue(shift.getH());
 
-            completeHue.setAdd(this.hueJitter(i-1, hueJitterA, hueJitterB, hueJitterC, hueJitterAmount));
-            completeHue.setAdd(this.hueNonlinRootSinTanh(i-1, hueNonlinSpread));
+            completeHue.setAdd(this.hueJitter(i, hueJitterA, hueJitterB, hueJitterC, hueJitterAmount));
+            completeHue.setAdd(this.hueNonlinRootSinTanh(i, hueNonlinSpread, colorCount));
 
-            HC sincSine = this.sincSine2(i, hueSincSinePosition);
+            HC sincSine = this.sincSine2(i, hueSincSinePosition, colorCount);
             completeHue.setAdd(sincSine.getH() * hueSincSineAmount);
 
-            double completeChroma = baseChroma * Math.max(Math.min(shift.getC(), 1), 0);
-            completeChroma += (sincSine.getC() * hueSincSineChromaAmount * baseChroma);
+            double chromaAccumulator = baseChroma * Math.max(Math.min(shift.getC(), 1), 0);
+            chromaAccumulator += (sincSine.getC() * hueSincSineChromaAmount * baseChroma);
 
-            if (i-1 < 4) {
-                completeChroma += this.basicSlope(i-1, 4.5, chromaSpreadDark);
-            } else if (i-1 > 4) {
-                completeChroma += this.basicSlope(i-1, 4.5, -chromaSpreadLight);
+            double res;
+            if (i < centerPos) {
+                res = this.basicSlopeDynamic(i, -chromaSpreadDark, colorCountMinus1);
+//                chromaAccumulator *= (1 - (res * res));
+            } else {
+                res = this.basicSlopeDynamic(i, chromaSpreadLight, colorCountMinus1);
             }
+            chromaAccumulator *= (1 - (res * res * 3));
 
             double completeLuminance = baseLuminance;
-            completeLuminance += this.basicSlopeCurvedNegative(i, 4.5, luminanceSpread);
+//            completeLuminance += this.basicSlopeCurvedNegative(i, 4, luminanceSpread, centerPos);
+//            completeLuminance += this.basicSlope(i, luminanceSpread, centerPos);
+            completeLuminance += this.basicSlopeDynamic(i, luminanceSpread, colorCountMinus1);
 
-            this.colors[i-1] = new Color(completeHue, softishClip(completeChroma * completeLuminance + 0), completeLuminance);
+            double completeChroma = softishClip(chromaAccumulator * completeLuminance) / 10;
+
+//            System.out.println(softishClip(chromaAccumulator * completeLuminance, centerPos));
+
+            if (Double.isNaN(completeHue.get())) {
+                System.out.println("hue NaN");
+            }
+            if (Double.isNaN(completeChroma)) {
+                System.out.println("chroma NaN");
+            }
+            if (Double.isNaN(completeLuminance)) {
+                System.out.println("luma NaN");
+            }
+            this.colors[i] = new Color(completeHue, completeChroma, completeLuminance);
         }
+//        System.out.println();
     }
 
     public RGB[] getColors() {
-        RGB[] out = new RGB[9];
-        for (int i = 0; i < 9; i++) {
+        RGB[] out = new RGB[this.colorCount];
+        for (int i = 0; i < this.colorCount; i++) {
             out[i] = this.colors[i].OKLABtoRGB();
         }
         return out;
     }
 
     public RGBPalette getRGBPalette() {
-        RGB[] out = new RGB[9];
-        for (int i = 0; i < 9; i++) {
+        RGB[] out = new RGB[this.colorCount];
+        for (int i = 0; i < this.colorCount; i++) {
             out[i] = this.colors[i].OKLABtoRGB().float01toInt255();
         }
         return new RGBPalette(out);
@@ -363,7 +399,8 @@ public class Palette {
                 (this.chromaSpreadDark + other.chromaSpreadDark) / 2,
                 (this.chromaSpreadLight + other.chromaSpreadLight) / 2,
                 (this.baseLuminance + other.baseLuminance) / 2,
-                (this.luminanceSpread + other.luminanceSpread) / 2);
+                (this.luminanceSpread + other.luminanceSpread) / 2,
+                Math.max(this.colorCount, other.getColorCount()));
     }
 
     public Palette average(Palette other, double otherWeight) {
@@ -382,11 +419,20 @@ public class Palette {
                 (1-otherWeight) * this.chromaSpreadDark + otherWeight * other.chromaSpreadDark,
                 (1-otherWeight) * this.chromaSpreadLight + otherWeight * other.chromaSpreadLight,
                 (1-otherWeight) * this.baseLuminance + otherWeight * other.baseLuminance,
-                (1-otherWeight) * this.luminanceSpread + otherWeight * other.luminanceSpread);
+                (1-otherWeight) * this.luminanceSpread + otherWeight * other.luminanceSpread,
+                Math.max(this.colorCount, other.getColorCount()));
     }
 
     private static double[] extractDouble(Palette[] paletteArray, Function<Palette, Double> func) {
         double[] out = new double[paletteArray.length];
+        for (int i = 0; i < out.length; i++) {
+            out[i] = func.apply(paletteArray[i]);
+        }
+        return out;
+    }
+
+    private static int[] extractInt(Palette[] paletteArray, Function<Palette, Integer> func) {
+        int[] out = new int[paletteArray.length];
         for (int i = 0; i < out.length; i++) {
             out[i] = func.apply(paletteArray[i]);
         }
@@ -419,6 +465,16 @@ public class Palette {
             counter += weights[i];
         }
         return sum / counter;
+    }
+
+    private static int max(int[] arr) {
+        int highest = 0;
+        for (int i : arr) {
+            if (i > highest) {
+                highest = i;
+            }
+        }
+        return highest;
     }
 
     public static double[] tilt(double index, double blend, double tilt) {
@@ -488,7 +544,8 @@ public class Palette {
                 average(extractDouble(palettes, Palette::getChromaSpreadDark)),
                 average(extractDouble(palettes, Palette::getChromaSpreadLight)),
                 average(extractDouble(palettes, Palette::getBaseLuminance)),
-                average(extractDouble(palettes, Palette::getLuminanceSpread)));
+                average(extractDouble(palettes, Palette::getLuminanceSpread)),
+                max(extractInt(palettes, Palette::getColorCount)));
     }
 
     public static Palette average(Palette[] palettes, double[] weights) {
@@ -512,7 +569,8 @@ public class Palette {
                 average(extractDouble(palettes, Palette::getChromaSpreadDark), weights),
                 average(extractDouble(palettes, Palette::getChromaSpreadLight), weights),
                 average(extractDouble(palettes, Palette::getBaseLuminance), weights),
-                average(extractDouble(palettes, Palette::getLuminanceSpread), weights));
+                average(extractDouble(palettes, Palette::getLuminanceSpread), weights),
+                max(extractInt(palettes, Palette::getColorCount)));
     }
 
 //    public static Palette average(Palette[] palettes, double index, double tilt) {
